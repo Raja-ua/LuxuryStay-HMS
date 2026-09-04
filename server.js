@@ -7,6 +7,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+connectDB()
 
 // Routes
 const userRoutes = require('./Routes/userRoutes');
@@ -33,13 +34,13 @@ app.get('/', (req, res) => {
     res.json({ message: 'LuxuryStay API is running' });
 });
 
-if (require.main === module) {
-    const port = process.env.PORT || 3000;
-    connectDB().then(() => {
-        app.listen(port, () => {
-            console.log(`Server running on http://localhost:${port}`);
-        });
-    });
-}
+// if (require.main === module) {
+//     const port = process.env.PORT || 3000;
+//     connectDB().then(() => {
+//         app.listen(port, () => {
+//             console.log(`Server running on http://localhost:${port}`);
+//         });
+//     });
+// }
 
 module.exports = app;
