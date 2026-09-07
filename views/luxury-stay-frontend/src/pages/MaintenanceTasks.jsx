@@ -22,6 +22,11 @@ const MaintenanceTasks = () => {
   });
 
   const [editingId, setEditingId] = useState(null);
+  
+  // Role checks
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = user.role?.toLowerCase() || '';
+  const isMaintenanceStaff = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(userRole);
 
   useEffect(() => {
     fetchData();
@@ -30,8 +35,12 @@ const MaintenanceTasks = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      
+      // If maintenance staff, only fetch their specific tasks
+      const tasksEndpoint = isMaintenanceStaff && user.isStaff ? `/maintenance/staff/${user._id}` : '/maintenance';
+      
       const [tasksRes, roomsRes, staffRes] = await Promise.all([
-        api.get('/maintenance'),
+        api.get(tasksEndpoint),
         api.get('/rooms'),
         api.get('/staff')
       ]);
@@ -124,12 +133,14 @@ const MaintenanceTasks = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Maintenance & Housekeeping</h1>
-          <p className="text-gray-500 mt-1 font-medium">Manage cleaning and repair tasks</p>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">{isMaintenanceStaff ? 'My Assigned Tasks' : 'Maintenance & Housekeeping'}</h1>
+          <p className="text-gray-500 mt-1 font-medium">{isMaintenanceStaff ? 'Update your task status here' : 'Manage cleaning and repair tasks'}</p>
         </div>
-        <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-2">
-          <FontAwesomeIcon icon={faPlus} /> New Task
-        </button>
+        {!isMaintenanceStaff && (
+          <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-2">
+            <FontAwesomeIcon icon={faPlus} /> New Task
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -141,14 +152,14 @@ const MaintenanceTasks = () => {
                 <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Issue Type</th>
                 <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Description</th>
                 <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Priority</th>
-                <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Assigned To</th>
+                {!isMaintenanceStaff && <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Assigned To</th>}
                 <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">Status</th>
                 <th className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {tasks.length === 0 ? (
-                <tr><td colSpan="7" className="p-8 text-center text-gray-500 font-medium">No tasks found.</td></tr>
+                <tr><td colSpan={isMaintenanceStaff ? "6" : "7"} className="p-8 text-center text-gray-500 font-medium">No tasks found.</td></tr>
               ) : (
                 tasks.map((task) => (
                   <tr key={task._id} className="hover:bg-gray-50 transition-colors">
@@ -156,19 +167,21 @@ const MaintenanceTasks = () => {
                     <td className="p-4 font-medium text-gray-700">{task.issueType}</td>
                     <td className="p-4 text-gray-600 text-sm max-w-xs truncate">{task.description}</td>
                     <td className={`p-4 ${getPriorityColor(task.priority)}`}>{task.priority}</td>
-                    <td className="p-4 font-medium text-gray-700">{task.assignedTo?.fullName || 'Unassigned'}</td>
+                    {!isMaintenanceStaff && <td className="p-4 font-medium text-gray-700">{task.assignedTo?.fullName || 'Unassigned'}</td>}
                     <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(task.status)}`}>
                         {task.status}
                       </span>
                     </td>
                     <td className="p-4 flex justify-center gap-3">
-                      <button onClick={() => handleOpenModal(task)} className="text-blue-500 hover:text-blue-700 transition-colors p-2 bg-blue-50 rounded-lg hover:bg-blue-100">
+                      <button onClick={() => handleOpenModal(task)} className="text-blue-500 hover:text-blue-700 transition-colors p-2 bg-blue-50 rounded-lg hover:bg-blue-100" title={isMaintenanceStaff ? "Update Status" : "Edit Task"}>
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
-                      <button onClick={() => handleDelete(task._id)} className="text-red-500 hover:text-red-700 transition-colors p-2 bg-red-50 rounded-lg hover:bg-red-100">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                      {!isMaintenanceStaff && (
+                        <button onClick={() => handleDelete(task._id)} className="text-red-500 hover:text-red-700 transition-colors p-2 bg-red-50 rounded-lg hover:bg-red-100" title="Delete Task">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -178,12 +191,12 @@ const MaintenanceTasks = () => {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingId ? "Edit Task" : "Add New Task"} maxWidth="max-w-2xl">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingId ? (isMaintenanceStaff ? "Update Task Status" : "Edit Task") : "Add New Task"} maxWidth="max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-5 p-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Room *</label>
-              <select required className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.roomId} onChange={e => setFormData({...formData, roomId: e.target.value})}>
+              <select required disabled={isMaintenanceStaff} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 disabled:opacity-60 disabled:bg-gray-100" value={formData.roomId} onChange={e => setFormData({...formData, roomId: e.target.value})}>
                 <option value="">Select Room</option>
                 {rooms.map(r => (
                   <option key={r._id} value={r._id}>{r.roomNumber} - {r.type}</option>
@@ -193,7 +206,7 @@ const MaintenanceTasks = () => {
             
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Issue Type *</label>
-              <select required className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.issueType} onChange={e => setFormData({...formData, issueType: e.target.value})}>
+              <select required disabled={isMaintenanceStaff} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 disabled:opacity-60 disabled:bg-gray-100" value={formData.issueType} onChange={e => setFormData({...formData, issueType: e.target.value})}>
                 <option value="Cleaning">Cleaning</option>
                 <option value="Repair">Repair</option>
                 <option value="Supply Request">Supply Request</option>
@@ -203,12 +216,12 @@ const MaintenanceTasks = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Description *</label>
-              <textarea required rows="3" className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Describe the issue..."></textarea>
+              <textarea required disabled={isMaintenanceStaff} rows="3" className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 disabled:opacity-60 disabled:bg-gray-100" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Describe the issue..."></textarea>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Priority *</label>
-              <select required className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})}>
+              <select required disabled={isMaintenanceStaff} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 disabled:opacity-60 disabled:bg-gray-100" value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})}>
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
                 <option value="High">High</option>
@@ -216,19 +229,21 @@ const MaintenanceTasks = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Assign To</label>
-              <select className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})}>
-                <option value="">Unassigned</option>
-                {staff.map(s => (
-                  <option key={s._id} value={s._id}>{s.fullName} ({s.role})</option>
-                ))}
-              </select>
-            </div>
+            {!isMaintenanceStaff && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Assign To</label>
+                <select className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})}>
+                  <option value="">Unassigned</option>
+                  {staff.map(s => (
+                    <option key={s._id} value={s._id}>{s.fullName} ({s.role})</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Status *</label>
-              <select required className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+              <select required className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 border-blue-500 ring-2 ring-blue-500/30" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Resolved">Resolved</option>
@@ -237,7 +252,7 @@ const MaintenanceTasks = () => {
           </div>
           
           <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-lg mt-4">
-            {editingId ? 'Update Task' : 'Create Task'}
+            {isMaintenanceStaff ? 'Update Status' : (editingId ? 'Update Task' : 'Create Task')}
           </button>
         </form>
       </Modal>
