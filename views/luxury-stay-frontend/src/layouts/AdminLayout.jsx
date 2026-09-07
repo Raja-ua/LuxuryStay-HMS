@@ -43,6 +43,7 @@ const AdminLayout = () => {
     { name: 'Rooms', path: '/admin/rooms', icon: faBed },
     { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
     { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
+    { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
     { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
     { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
     { name: 'Users', path: '/admin/users', icon: faUser },

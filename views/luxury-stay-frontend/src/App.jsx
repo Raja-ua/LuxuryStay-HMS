@@ -30,10 +30,10 @@ import Staff from './pages/Staff';
 import StaffDetail from './pages/StaffDetail';
 import Roles from './pages/Roles';
 import Reservations from './pages/Reservations';
-
 import Billings from './pages/Billings';
 import Feedbacks from './pages/Feedbacks';
 import Messages from './pages/Messages';
+import MaintenanceTasks from './pages/MaintenanceTasks';
 
 import NotFound from './pages/NotFound';
 import PageTransition from './components/PageTransition';
@@ -75,6 +75,7 @@ function App() {
           <Route path="roles" element={<Roles />} />
           <Route path="reservations" element={<Reservations />} />
           <Route path="billings" element={<Billings />} />
+          <Route path="maintenance" element={<MaintenanceTasks />} />
           <Route path="feedbacks" element={<Feedbacks />} />
           <Route path="messages" element={<Messages />} />
         </Route>
