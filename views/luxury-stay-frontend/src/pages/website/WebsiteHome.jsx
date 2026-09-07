@@ -43,8 +43,19 @@ const WebsiteHome = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const { data } = await api.get('/rooms');
-        const availableRooms = data.filter(r => r.status === 'available').slice(0, 3);
+        const [roomsRes, reservationsRes] = await Promise.all([
+          api.get('/rooms'),
+          api.get('/reservations')
+        ]);
+        
+        // Find rooms that have active reservations (confirmed or checked-in)
+        const activeReservations = reservationsRes.data.filter(r => r.status === 'confirmed' || r.status === 'checked-in');
+        const bookedRoomIds = activeReservations.map(r => r.roomId?._id || r.roomId);
+        
+        const availableRooms = roomsRes.data
+          .filter(r => r.status === 'available' && !bookedRoomIds.includes(r._id))
+          .slice(0, 3);
+          
         setFeaturedRooms(availableRooms);
       } catch (error) {
         console.error("Failed to fetch featured rooms");
@@ -160,6 +171,15 @@ const WebsiteHome = () => {
               <div className="col-span-full text-center text-gray-500 py-10">Loading featured rooms...</div>
             )}
           </div>
+          
+          {/* See More Button */}
+          {featuredRooms.length > 0 && (
+            <div className="mt-16 text-center">
+              <Link to="/rooms" className="inline-block border-b-2 border-blue-600 text-gray-900 hover:text-blue-600 font-bold uppercase tracking-widest text-sm pb-1 transition-colors duration-300">
+                See More Rooms <FontAwesomeIcon icon={faChevronRight} className="ml-2 text-xs" />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

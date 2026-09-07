@@ -21,14 +21,24 @@ const PublicRooms = () => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    const fetchRooms = async () => {
+    const fetchRoomsAndReservations = async () => {
       try {
-        const { data } = await api.get('/rooms');
-        // Only show available rooms for booking publicly
-        setRooms(data.filter(r => r.status === 'available'));
-      } catch (err) { toast.error('Failed to load rooms'); }
+        const [roomsRes, reservationsRes] = await Promise.all([
+          api.get('/rooms'),
+          api.get('/reservations')
+        ]);
+        
+        // Filter out rooms that are currently booked (confirmed or checked-in)
+        const activeReservations = reservationsRes.data.filter(r => r.status === 'confirmed' || r.status === 'checked-in');
+        const bookedRoomIds = activeReservations.map(r => r.roomId?._id || r.roomId);
+        
+        const availableRooms = roomsRes.data.filter(r => r.status === 'available' && !bookedRoomIds.includes(r._id));
+        setRooms(availableRooms);
+      } catch (err) { 
+        toast.error('Failed to load rooms'); 
+      }
     };
-    fetchRooms();
+    fetchRoomsAndReservations();
   }, []);
 
   const handleBookClick = (room) => {
