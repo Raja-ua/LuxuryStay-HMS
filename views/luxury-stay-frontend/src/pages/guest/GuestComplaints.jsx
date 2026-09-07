@@ -24,10 +24,10 @@ const GuestComplaints = () => {
         api.get('/maintenance')
       ]);
 
-      // Filter active reservations for this user (only checked-in, not past ones)
+      // Filter active reservations for this user (confirmed or checked-in)
       const userReservations = resData.data.filter(r => {
           const guestIdStr = r.guestId?._id || r.guestId;
-          return guestIdStr === user._id && r.status === 'checked-in';
+          return guestIdStr === user._id && (r.status === 'confirmed' || r.status === 'checked-in');
       });
       
       // Extract unique rooms
@@ -105,7 +105,7 @@ const GuestComplaints = () => {
 
         {rooms.length === 0 ? (
           <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl font-medium border border-yellow-200">
-            You don't have any currently active (checked-in) room bookings to report an issue for.
+            You don't have any active room bookings at the moment to report an issue.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
