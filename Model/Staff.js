@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const staffSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
-    email: { type: String }, // optional
+    email: { type: String, required: true, unique: true }, 
+    password: { type: String, required: true },
     contactNumber: { type: String },
-    dateOfBirth: { type: Date }, // optional
+    dateOfBirth: { type: Date }, 
     city: { type: String },
     address: { type: String },
-    image: { type: String }, // From Cloudinary
+    image: { type: String }, 
     assignWork: { type: String },
     role: { type: String, required: true },
     joiningDate: { type: Date },
@@ -15,5 +17,15 @@ const staffSchema = new mongoose.Schema({
     salary: { type: Number },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
 }, { timestamps: true });
+
+staffSchema.pre('save', async function() {
+    if (!this.isModified('password')) return;
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+staffSchema.methods.comparePassword = async function(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = mongoose.model('Staff', staffSchema);

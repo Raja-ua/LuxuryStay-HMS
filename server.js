@@ -19,6 +19,7 @@ const feedbackRoutes = require('./Routes/feedbackRoutes');
 const staffRoutes = require('./Routes/staffRoutes');
 const roleRoutes = require('./Routes/roleRoutes');
 const contactRoutes = require('./Routes/contactRoutes');
+const maintenanceRoutes = require('./Routes/maintenanceRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
@@ -29,6 +30,7 @@ app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'LuxuryStay API is running' });

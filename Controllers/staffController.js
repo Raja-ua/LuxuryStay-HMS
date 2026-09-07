@@ -73,3 +73,27 @@ exports.deleteStaff = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.loginStaff = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const staff = await Staff.findOne({ email });
+        
+        if (!staff) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+        
+        const isMatch = await staff.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+        
+        if (staff.status === 'Inactive') {
+            return res.status(403).json({ message: 'Account is inactive. Contact Admin.' });
+        }
+        
+        res.json({ message: 'Login successful', staff });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
