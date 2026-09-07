@@ -232,8 +232,12 @@ const Staff = () => {
               <input required minLength="3" type="text" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Email</label>
-              <input type="email" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Email *</label>
+              <input required type="email" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.email || ''} onChange={e => setFormData({...formData, email: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Password {editingStaff ? '(Leave blank to keep same)' : '*'}</label>
+              <input type="password" required={!editingStaff} className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.password || ''} onChange={e => setFormData({...formData, password: e.target.value})} />
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Contact Number *</label>

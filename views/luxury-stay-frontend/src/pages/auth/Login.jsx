@@ -12,22 +12,32 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const [loginType, setLoginType] = useState('user'); // 'user' or 'staff'
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data } = await api.post('/users/login', formData);
-      const user = data.user;
+      const endpoint = loginType === 'staff' ? '/staff/login' : '/users/login';
+      const { data } = await api.post(endpoint, formData);
+      const user = loginType === 'staff' ? data.staff : data.user;
       
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
-        toast.success(`Logged in as ${user.role}!`);
+        // Normalize staff object to match user structure if needed
+        const loggedInUser = {
+          ...user,
+          role: loginType === 'staff' ? user.role.toLowerCase() : user.role,
+          isStaff: loginType === 'staff'
+        };
         
-        // Redirect based on role
-        if (user.role === 'guest') {
-          window.location.href = '/'; 
-        } else {
+        localStorage.setItem('user', JSON.stringify(loggedInUser));
+        toast.success(`Logged in as ${loggedInUser.role}!`);
+        
+        // Redirect based on role and login type
+        if (loginType === 'staff' || loggedInUser.role !== 'guest') {
           window.location.href = '/admin'; 
+        } else {
+          window.location.href = '/'; 
         }
       } else {
         toast.error('Invalid email or password');
@@ -49,7 +59,25 @@ const Login = () => {
 
       <div className="w-full max-w-md bg-white border border-gray-200 p-10 md:p-12 shadow-sm rounded-none">
         <h2 className="text-3xl font-serif text-[#1b3658] mb-2 text-center">Sign In</h2>
-        <p className="text-gray-500 mb-8 font-light text-center">Access your personalized dashboard</p>
+        <p className="text-gray-500 mb-6 font-light text-center">Access your personalized dashboard</p>
+
+        {/* Login Type Toggle */}
+        <div className="flex bg-gray-100 p-1 rounded-lg mb-8">
+          <button 
+            type="button"
+            onClick={() => setLoginType('user')}
+            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${loginType === 'user' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Guest / Admin
+          </button>
+          <button 
+            type="button"
+            onClick={() => setLoginType('staff')}
+            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${loginType === 'staff' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Hotel Staff
+          </button>
+        </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
