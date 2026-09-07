@@ -30,8 +30,12 @@ exports.createStaff = async (req, res) => {
             imageUrl = result.secure_url;
         }
 
+        const staffData = { ...req.body };
+        if (!staffData.email) delete staffData.email;
+        if (!staffData.password) delete staffData.password;
+        
         const newStaff = new Staff({
-            ...req.body,
+            ...staffData,
             image: imageUrl || req.body.image
         });
 
@@ -54,6 +58,8 @@ exports.updateStaff = async (req, res) => {
 
         const updatedData = { ...req.body };
         if (imageUrl) updatedData.image = imageUrl;
+        if (!updatedData.email) delete updatedData.email;
+        if (!updatedData.password) delete updatedData.password;
 
         const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, updatedData, { new: true });
         if (!updatedStaff) return res.status(404).json({ message: 'Staff member not found' });
