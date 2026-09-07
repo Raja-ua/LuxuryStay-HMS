@@ -240,6 +240,9 @@ const WebsiteLayout = () => {
                       <Link to="/my-bills" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
                         <FontAwesomeIcon icon={faFileInvoiceDollar} className="w-4 text-center" /> My Payments
                       </Link>
+                      <Link to="/report-issue" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
+                        <FontAwesomeIcon icon={faClipboardList} className="w-4 text-center" /> Report Issue
+                      </Link>
                       <Link to="/feedback" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
                         <FontAwesomeIcon icon={faCommentDots} className="w-4 text-center" /> Feedback
                       </Link>

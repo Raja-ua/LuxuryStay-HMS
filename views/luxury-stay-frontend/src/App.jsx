@@ -18,6 +18,7 @@ import Register from './pages/auth/Register';
 import GuestBookings from './pages/guest/GuestBookings';
 import GuestBills from './pages/guest/GuestBills';
 import GuestFeedback from './pages/guest/GuestFeedback';
+import GuestComplaints from './pages/guest/GuestComplaints';
 import Profile from './pages/guest/Profile';
 
 // Admin Pages
@@ -61,6 +62,7 @@ function App() {
           <Route path="my-bookings" element={<div className="container mx-auto px-4 py-8"><GuestBookings /></div>} />
           <Route path="my-bills" element={<div className="container mx-auto px-4 py-8"><GuestBills /></div>} />
           <Route path="feedback" element={<div className="container mx-auto px-4 py-8"><GuestFeedback /></div>} />
+          <Route path="report-issue" element={<div className="container mx-auto px-4 py-8"><GuestComplaints /></div>} />
         </Route>
 
         {/* Admin Routes */}
