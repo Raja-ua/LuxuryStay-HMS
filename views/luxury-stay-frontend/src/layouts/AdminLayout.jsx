@@ -106,9 +106,11 @@ const AdminLayout = () => {
           })}
         </nav>
         <div className="p-4 border-t border-gray-800 space-y-3 bg-gray-900/50">
-          <Link to="/" className="w-full flex items-center justify-center gap-2 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white py-3.5 rounded-xl transition-all font-semibold hover:shadow-lg">
-            <FontAwesomeIcon icon={faGlobe} /> Public Website
-          </Link>
+          {!isMaintenanceStaff && (
+            <Link to="/" className="w-full flex items-center justify-center gap-2 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white py-3.5 rounded-xl transition-all font-semibold hover:shadow-lg">
+              <FontAwesomeIcon icon={faGlobe} /> Public Website
+            </Link>
+          )}
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white py-3.5 rounded-xl transition-all font-semibold">
             <FontAwesomeIcon icon={faSignOutAlt} /> Logout
           </button>
@@ -154,7 +156,9 @@ const AdminLayout = () => {
               ))}
             </nav>
             <div className="p-6 border-t border-gray-800 space-y-3">
-              <Link to="/" className="w-full flex justify-center py-4 bg-gray-800 rounded-xl font-bold"><FontAwesomeIcon icon={faGlobe} className="mr-2" /> View Website</Link>
+              {!isMaintenanceStaff && (
+                <Link to="/" className="w-full flex justify-center py-4 bg-gray-800 rounded-xl font-bold"><FontAwesomeIcon icon={faGlobe} className="mr-2" /> View Website</Link>
+              )}
               <button onClick={handleLogout} className="w-full py-4 bg-red-600 rounded-xl font-bold"><FontAwesomeIcon icon={faSignOutAlt} className="mr-2" /> Logout</button>
             </div>
           </div>
