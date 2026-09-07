@@ -38,18 +38,22 @@ const AdminLayout = () => {
 
   if (!user || user.role === 'guest') return null;
 
+  const userRole = user.role?.toLowerCase() || '';
+  const isAdmin = userRole === 'admin';
+  const isMaintenanceStaff = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(userRole);
+
   const adminLinks = [
     { name: 'Dashboard', path: '/admin', icon: faHotel },
-    { name: 'Rooms', path: '/admin/rooms', icon: faBed },
-    { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
-    { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
+    !isMaintenanceStaff && { name: 'Rooms', path: '/admin/rooms', icon: faBed },
+    !isMaintenanceStaff && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
+    !isMaintenanceStaff && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
     { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
-    { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
-    { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
-    { name: 'Users', path: '/admin/users', icon: faUser },
-    { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
-    { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
-  ];
+    !isMaintenanceStaff && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
+    !isMaintenanceStaff && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
+    !isMaintenanceStaff && { name: 'Users', path: '/admin/users', icon: faUser },
+    isAdmin && { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
+    isAdmin && { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
+  ].filter(Boolean);
 
   return (
     <div className="admin-panel min-h-screen bg-gray-50 flex">
