@@ -35,7 +35,12 @@ const Login = () => {
         
         // Redirect based on role and login type
         if (loginType === 'staff' || loggedInUser.role !== 'guest') {
-          window.location.href = '/admin'; 
+          const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(loggedInUser.role);
+          if (isMaint) {
+            window.location.href = '/admin/maintenance';
+          } else {
+            window.location.href = '/admin'; 
+          }
         } else {
           window.location.href = '/'; 
         }

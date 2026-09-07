@@ -27,9 +27,15 @@ const AdminLayout = () => {
         navigate('/');
       } else {
         setUser(parsed);
+        // Redirect maintenance staff away from the main dashboard
+        const role = parsed.role?.toLowerCase() || '';
+        const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(role);
+        if (isMaint && location.pathname === '/admin') {
+          navigate('/admin/maintenance');
+        }
       }
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -43,7 +49,7 @@ const AdminLayout = () => {
   const isMaintenanceStaff = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(userRole);
 
   const adminLinks = [
-    { name: 'Dashboard', path: '/admin', icon: faHotel },
+    !isMaintenanceStaff && { name: 'Dashboard', path: '/admin', icon: faHotel },
     !isMaintenanceStaff && { name: 'Rooms', path: '/admin/rooms', icon: faBed },
     !isMaintenanceStaff && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
     !isMaintenanceStaff && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
