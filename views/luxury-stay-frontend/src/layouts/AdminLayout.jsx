@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faHotel, faUser, faUserTie, faIdBadge, faBed, faClipboardList, 
   faSignOutAlt, faBroom, faMoneyBillWave, faCommentDots,
-  faBars, faGlobe, faEnvelope
+  faBars, faGlobe, faEnvelope, faConciergeBell
 } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -54,6 +54,7 @@ const AdminLayout = () => {
     !isMaintenanceStaff && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
     !isMaintenanceStaff && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
     { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
+    !isMaintenanceStaff && { name: 'Guest Services', path: '/admin/services', icon: faConciergeBell },
     !isMaintenanceStaff && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
     !isMaintenanceStaff && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
     !isMaintenanceStaff && { name: 'Users', path: '/admin/users', icon: faUser },

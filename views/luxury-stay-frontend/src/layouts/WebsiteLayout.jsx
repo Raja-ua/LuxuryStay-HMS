@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHotel, faUser, faSignOutAlt, faBell, faChevronDown, faClipboardList, faFileInvoiceDollar, faCommentDots, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faHotel, faUser, faSignOutAlt, faBell, faChevronDown, faClipboardList, faFileInvoiceDollar, faCommentDots, faBars, faTimes, faConciergeBell } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 
@@ -242,6 +242,9 @@ const WebsiteLayout = () => {
                       </Link>
                       <Link to="/report-issue" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
                         <FontAwesomeIcon icon={faClipboardList} className="w-4 text-center" /> Report Issue
+                      </Link>
+                      <Link to="/guest-services" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
+                        <FontAwesomeIcon icon={faConciergeBell} className="w-4 text-center" /> Guest Services
                       </Link>
                       <Link to="/feedback" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition flex items-center gap-3 border-b border-gray-100">
                         <FontAwesomeIcon icon={faCommentDots} className="w-4 text-center" /> Feedback

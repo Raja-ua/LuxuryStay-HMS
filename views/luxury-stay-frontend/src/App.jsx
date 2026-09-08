@@ -14,15 +14,8 @@ import ContactUs from './pages/website/ContactUs';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
-// Guest Private Pages
-import GuestBookings from './pages/guest/GuestBookings';
-import GuestBills from './pages/guest/GuestBills';
-import GuestFeedback from './pages/guest/GuestFeedback';
-import GuestComplaints from './pages/guest/GuestComplaints';
-import Profile from './pages/guest/Profile';
-
 // Admin Pages
-import AdminDashboardHome from './pages/Home'; // reusing the old home as Admin Dashboard
+import AdminDashboardHome from './pages/Home'; 
 import Rooms from './pages/Rooms';
 import RoomDetail from './pages/RoomDetail';
 import Users from './pages/Users';
@@ -35,6 +28,15 @@ import Billings from './pages/Billings';
 import Feedbacks from './pages/Feedbacks';
 import Messages from './pages/Messages';
 import MaintenanceTasks from './pages/MaintenanceTasks';
+import ServiceRequests from './pages/ServiceRequests';
+
+// Guest Private Pages
+import GuestBookings from './pages/guest/GuestBookings';
+import GuestBills from './pages/guest/GuestBills';
+import GuestFeedback from './pages/guest/GuestFeedback';
+import GuestComplaints from './pages/guest/GuestComplaints';
+import GuestServices from './pages/guest/GuestServices';
+import Profile from './pages/guest/Profile';
 
 import NotFound from './pages/NotFound';
 import PageTransition from './components/PageTransition';
@@ -63,6 +65,7 @@ function App() {
           <Route path="my-bills" element={<div className="container mx-auto px-4 py-8"><GuestBills /></div>} />
           <Route path="feedback" element={<div className="container mx-auto px-4 py-8"><GuestFeedback /></div>} />
           <Route path="report-issue" element={<div className="container mx-auto px-4 py-8"><GuestComplaints /></div>} />
+          <Route path="guest-services" element={<div className="container mx-auto px-4 py-8"><GuestServices /></div>} />
         </Route>
 
         {/* Admin Routes */}
@@ -78,6 +81,7 @@ function App() {
           <Route path="reservations" element={<Reservations />} />
           <Route path="billings" element={<Billings />} />
           <Route path="maintenance" element={<MaintenanceTasks />} />
+          <Route path="services" element={<ServiceRequests />} />
           <Route path="feedbacks" element={<Feedbacks />} />
           <Route path="messages" element={<Messages />} />
         </Route>
