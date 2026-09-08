@@ -96,7 +96,7 @@ const Billings = () => {
       const checkIn = new Date(selectedRes.checkInDate);
       const checkOut = new Date(selectedRes.checkOutDate);
       const diffDays = Math.ceil(Math.abs(checkOut - checkIn) / (1000 * 60 * 60 * 24)) || 1;
-      const roomCharges = diffDays * (selectedRes.roomId?.price || 0);
+      const roomCharges = diffDays * (selectedRes.roomId?.pricePerNight || 0);
 
       const { tax, total } = calculateTotal(roomCharges, formData.additionalCharges);
 
