@@ -41,13 +41,15 @@ import Profile from './pages/guest/Profile';
 
 import NotFound from './pages/NotFound';
 import PageTransition from './components/PageTransition';
+import { SettingsProvider } from './context/SettingsContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <PageTransition>
-        <Toaster position="top-right" />
-        <Routes>
+    <SettingsProvider>
+      <BrowserRouter>
+        <PageTransition>
+          <Toaster position="top-right" />
+          <Routes>
         {/* Auth Routes (Standalone) */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -92,6 +94,7 @@ function App() {
       </Routes>
       </PageTransition>
     </BrowserRouter>
+    </SettingsProvider>
   );
 }
 

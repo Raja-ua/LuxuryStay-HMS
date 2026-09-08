@@ -8,7 +8,6 @@ const Settings = () => {
   const [settings, setSettings] = useState({
     hotelName: '',
     taxRate: 10,
-    currency: 'USD',
     checkoutTime: '12:00 PM',
     cancellationPolicy: ''
   });
@@ -113,20 +112,6 @@ const Settings = () => {
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">This tax rate will be applied automatically to all new bills.</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Default Currency</label>
-                <select 
-                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                  value={settings.currency}
-                  onChange={(e) => setSettings({...settings, currency: e.target.value})}
-                >
-                  <option value="USD">USD ($)</option>
-                  <option value="PKR">PKR (Rs)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                </select>
               </div>
             </div>
           </div>

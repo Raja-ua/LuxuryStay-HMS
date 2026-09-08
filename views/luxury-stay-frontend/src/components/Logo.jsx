@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSettings } from '../context/SettingsContext';
 
 const Logo = ({ size = 'md', isDark = true }) => {
+  const { settings } = useSettings();
+  const hotelName = settings?.hotelName?.toUpperCase() || 'LUXURYSTAY';
+
   const textColor = isDark ? 'text-[#1b3658]' : 'text-white';
   const iconColor = 'text-[#937648]'; // Bronze accent
 
@@ -23,8 +27,8 @@ const Logo = ({ size = 'md', isDark = true }) => {
         <path d="M12 2C12 2 8 8 5 12C2 16 2 19 2 20C2 21.1 2.9 22 4 22C5.5 22 8 20.5 12 16C16 20.5 18.5 22 20 22C21.1 22 22 21.1 22 20C22 19 22 16 19 12C16 8 12 2 12 2Z" />
         <path d="M12 5C12 5 10.5 10 12 14.5C13.5 10 12 5 12 5Z" fill="white" opacity="0.4" />
       </svg>
-      <span className={`${titleSize} font-serif tracking-widest leading-none`}>
-        LUXURYSTAY
+      <span className={`${titleSize} font-serif tracking-widest leading-none text-center`}>
+        {hotelName}
       </span>
       <span className={`${subtitleSize} font-sans tracking-[0.3em] font-light mt-1 uppercase`}>
         Hotels & Resorts

@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faPrint } from '@fortawesome/free-solid-svg-icons';
+import { useSettings } from '../context/SettingsContext';
 
 const Billings = () => {
+  const { settings } = useSettings();
   const [billings, setBillings] = useState([]);
   const [reservations, setReservations] = useState([]);
   
@@ -15,7 +17,7 @@ const Billings = () => {
   const [selectedBillForPrint, setSelectedBillForPrint] = useState(null);
   
   const [formData, setFormData] = useState({
-    reservationId: '', guestId: '', roomCharges: 0, additionalCharges: 0, totalAmount: 0, status: 'pending'
+    reservationId: '', guestId: '', roomCharges: 0, additionalCharges: 0, taxAmount: 0, totalAmount: 0, status: 'pending'
   });
 
   const fetchData = async () => {
@@ -30,9 +32,16 @@ const Billings = () => {
 
   useEffect(() => { fetchData(); }, []);
 
+  const calculateTotal = (room, additional) => {
+    const subtotal = Number(room) + Number(additional);
+    const taxRate = settings?.taxRate || 0;
+    const tax = subtotal * (taxRate / 100);
+    return { tax, total: subtotal + tax };
+  };
+
   const openAddModal = () => {
     setEditingBill(null);
-    setFormData({ reservationId: '', guestId: '', roomCharges: 0, additionalCharges: 0, totalAmount: 0, status: 'pending' });
+    setFormData({ reservationId: '', guestId: '', roomCharges: 0, additionalCharges: 0, taxAmount: 0, totalAmount: 0, status: 'pending' });
     setIsModalOpen(true);
   };
 
@@ -43,6 +52,7 @@ const Billings = () => {
       guestId: bill.guestId?._id || '', 
       roomCharges: bill.roomCharges, 
       additionalCharges: bill.additionalCharges, 
+      taxAmount: bill.taxAmount || 0,
       totalAmount: bill.totalAmount, 
       status: bill.status 
     });
@@ -81,25 +91,36 @@ const Billings = () => {
 
   const handleReservationSelect = (e) => {
     const resId = e.target.value;
-    const res = reservations.find(r => r._id === resId);
-    if (res) {
+    const selectedRes = reservations.find(r => r._id === resId);
+    if (selectedRes) {
+      const checkIn = new Date(selectedRes.checkInDate);
+      const checkOut = new Date(selectedRes.checkOutDate);
+      const diffDays = Math.ceil(Math.abs(checkOut - checkIn) / (1000 * 60 * 60 * 24)) || 1;
+      const roomCharges = diffDays * (selectedRes.roomId?.price || 0);
+
+      const { tax, total } = calculateTotal(roomCharges, formData.additionalCharges);
+
       setFormData({
         ...formData,
         reservationId: resId,
-        guestId: res.guestId?._id,
-        roomCharges: res.totalAmount,
-        totalAmount: Number(res.totalAmount) + Number(formData.additionalCharges),
-        status: res.paymentStatus === 'Refunded' ? 'refunded' : (res.paymentStatus === 'Paid' ? 'paid' : 'pending')
+        guestId: selectedRes.guestId?._id || '',
+        roomCharges: roomCharges,
+        taxAmount: tax,
+        totalAmount: total
       });
+    } else {
+      setFormData({...formData, reservationId: '', roomCharges: 0, taxAmount: 0, totalAmount: 0});
     }
   };
 
   const handleAdditionalChargesChange = (e) => {
-    const val = Number(e.target.value);
-    setFormData({
-      ...formData,
-      additionalCharges: val,
-      totalAmount: Number(formData.roomCharges) + val
+    const additional = e.target.value;
+    const { tax, total } = calculateTotal(formData.roomCharges, additional);
+    setFormData({ 
+      ...formData, 
+      additionalCharges: additional, 
+      taxAmount: tax,
+      totalAmount: total 
     });
   };
 
@@ -237,9 +258,13 @@ const Billings = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Total ($)</label>
-              <input required type="number" readOnly className="w-full bg-blue-50 border border-blue-100 text-blue-800 p-3 rounded-xl font-black outline-none" value={formData.totalAmount} />
+              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Tax Amount ($)</label>
+              <input required type="number" readOnly className="w-full bg-gray-100 border border-gray-200 text-gray-500 p-3 rounded-xl cursor-not-allowed outline-none" value={formData.taxAmount} />
             </div>
+          </div>
+          <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Total ($) <span className="text-gray-400 lowercase text-xs font-normal">(incl. tax)</span></label>
+              <input required type="number" readOnly className="w-full bg-blue-50 border border-blue-100 text-blue-800 p-3 rounded-xl font-black outline-none" value={formData.totalAmount} />
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 mt-4">Save Bill</button>
         </form>
@@ -280,6 +305,10 @@ const Billings = () => {
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Additional Charges</span>
                 <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.additionalCharges}</span>
+              </div>
+              <div className="flex justify-between items-center px-2">
+                <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Tax Amount</span>
+                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.taxAmount || 0}</span>
               </div>
             </div>
             <div className="flex justify-between items-center border-b-2 border-gray-800 py-6 px-2 bg-gray-50">
