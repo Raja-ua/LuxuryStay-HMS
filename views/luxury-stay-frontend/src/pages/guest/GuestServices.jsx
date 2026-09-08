@@ -27,7 +27,7 @@ const GuestServices = () => {
       // Filter active reservations for this user
       const userReservations = resData.data.filter(r => {
           const guestIdStr = r.guestId?._id || r.guestId;
-          return guestIdStr === user._id && r.status === 'checked-in';
+          return guestIdStr === user._id && (r.status === 'confirmed' || r.status === 'checked-in');
       });
       
       const uniqueRooms = [];
@@ -97,7 +97,7 @@ const GuestServices = () => {
 
         {rooms.length === 0 ? (
           <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl font-medium border border-yellow-200">
-            You don't have any currently active (checked-in) room bookings to request a service for.
+            You don't have any active room bookings to request a service for.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
