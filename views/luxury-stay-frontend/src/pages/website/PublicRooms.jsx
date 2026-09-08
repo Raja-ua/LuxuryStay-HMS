@@ -268,7 +268,7 @@ const PublicRooms = () => {
           {currentStep === 3 && (
             <div className="space-y-4 animate-fade-in-up">
               <h3 className="font-bold text-gray-800 text-lg border-b pb-2">Step 3: Payment Setup</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
                 <div>
                   <label className="block text-gray-700 font-medium mb-1">Initial Payment Amount ($) *</label>
                   <input required type="number" min="1" max={getTotals().total || 99999} className="w-full border-gray-300 border p-3 rounded-none focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" placeholder="Minimum $1 required to book" value={bookingData.initialPaymentAmount} onChange={e => setBookingData({...bookingData, initialPaymentAmount: e.target.value})} />
@@ -286,6 +286,13 @@ const PublicRooms = () => {
                     <option value="Online">Online Transfer</option>
                   </select>
                 </div>
+              </div>
+              <div className="bg-blue-50 p-4 border border-blue-100 text-sm text-blue-900 mt-4">
+                <p className="font-bold mb-1">Hotel Policies:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>Check-out Time:</strong> {settings?.checkoutTime || '12:00 PM'}</li>
+                  <li><strong>Cancellation:</strong> {settings?.cancellationPolicy || 'Standard rules apply.'}</li>
+                </ul>
               </div>
             </div>
           )}

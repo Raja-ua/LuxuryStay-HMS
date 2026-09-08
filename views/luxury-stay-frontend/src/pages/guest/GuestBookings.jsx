@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faBed, faDoorOpen, faCreditCard, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faBed, faDoorOpen, faCreditCard, faMoneyBillWave, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { useSettings } from '../../context/SettingsContext';
 
 const GuestBookings = () => {
+  const { settings } = useSettings();
   const [bookings, setBookings] = useState([]);
   const user = JSON.parse(localStorage.getItem('user'));
   const [loading, setLoading] = useState(true);
@@ -34,6 +36,17 @@ const GuestBookings = () => {
       <div className="mb-8 border-b pb-4">
         <h1 className="text-3xl font-extrabold text-gray-800">My Bookings</h1>
         <p className="text-gray-500 mt-2">Manage and view your hotel reservations.</p>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-8 flex gap-3 items-start">
+        <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500 mt-1" />
+        <div className="text-sm text-blue-900">
+          <p className="font-bold mb-1">Hotel Policies</p>
+          <ul className="list-disc pl-4 space-y-1">
+            <li><strong>Check-out Time:</strong> {settings?.checkoutTime || '12:00 PM'}</li>
+            <li><strong>Cancellation:</strong> {settings?.cancellationPolicy || 'Standard rules apply.'}</li>
+          </ul>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
