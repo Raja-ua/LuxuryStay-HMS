@@ -77,22 +77,22 @@ const GuestBills = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Room Charges:</span>
-                  <span className="font-medium text-gray-800">${b.roomCharges}</span>
+                  <span className="font-medium text-gray-800">${Number(b.roomCharges || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Additional Charges:</span>
-                  <span className="font-medium text-gray-800">${b.additionalCharges}</span>
+                  <span className="font-medium text-gray-800">${Number(b.additionalCharges || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100 mt-3 text-gray-800">
                   <span>Total Bill:</span>
-                  <span>${b.totalAmount}</span>
+                  <span>${Number(b.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-semibold text-gray-600">Amount Paid:</span>
-                  <span className="font-bold text-green-600">${b.reservationId?.paidAmount || 0}</span>
+                  <span className="font-bold text-green-600">${Number(b.reservationId?.paidAmount || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   {(() => {
@@ -101,14 +101,14 @@ const GuestBills = () => {
                       return (
                         <>
                           <span className="font-semibold text-gray-600">Refund Due:</span>
-                          <span className="font-bold text-purple-600">${Math.abs(diff)}</span>
+                          <span className="font-bold text-purple-600">${Math.abs(diff).toFixed(2)}</span>
                         </>
                       );
                     }
                     return (
                       <>
                         <span className="font-semibold text-gray-600">Remaining Balance:</span>
-                        <span className="font-bold text-red-500">${diff}</span>
+                        <span className="font-bold text-red-500">${diff.toFixed(2)}</span>
                       </>
                     );
                   })()}
@@ -164,16 +164,20 @@ const GuestBills = () => {
             <div className="border-t-2 border-b-2 border-gray-800 py-4 space-y-4">
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Room Charges</span>
-                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.roomCharges}</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.roomCharges || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Additional Charges</span>
-                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.additionalCharges}</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.additionalCharges || 0).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center px-2">
+                <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Tax Amount</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.taxAmount || 0).toFixed(2)}</span>
               </div>
             </div>
             <div className="flex justify-between items-center border-b-2 border-gray-800 py-6 px-2 bg-gray-50">
               <span className="font-black text-xl text-gray-900 uppercase tracking-widest">Total Amount</span>
-              <span className="font-black text-4xl text-gray-900">${selectedBillForPrint.totalAmount}</span>
+              <span className="font-black text-4xl text-gray-900">${Number(selectedBillForPrint.totalAmount || 0).toFixed(2)}</span>
             </div>
           </div>
           

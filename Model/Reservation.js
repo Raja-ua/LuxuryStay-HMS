@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
+const roundToTwo = (val) => Math.round(Number(val) * 100) / 100;
+
 const paymentSchema = new mongoose.Schema({
-    amount: { type: Number, required: true },
+    amount: { type: Number, required: true, set: roundToTwo },
     method: { type: String, required: true }, // e.g., 'Cash', 'Credit Card', 'Online'
     date: { type: Date, default: Date.now },
     transactionId: { type: String }
@@ -17,10 +19,10 @@ const reservationSchema = new mongoose.Schema({
         enum: ['pending', 'confirmed', 'checked-in', 'checked-out', 'early-checkout', 'cancelled'], 
         default: 'pending' 
     },
-    totalAmount: { type: Number, required: true, default: 0 },
-    paidAmount: { type: Number, default: 0 },
-    remainingAmount: { type: Number, default: 0 },
-    refundAmount: { type: Number, default: 0 },
+    totalAmount: { type: Number, required: true, default: 0, set: roundToTwo },
+    paidAmount: { type: Number, default: 0, set: roundToTwo },
+    remainingAmount: { type: Number, default: 0, set: roundToTwo },
+    refundAmount: { type: Number, default: 0, set: roundToTwo },
     paymentStatus: {
         type: String,
         enum: ['Unpaid', 'Partially Paid', 'Paid', 'Refunded'],

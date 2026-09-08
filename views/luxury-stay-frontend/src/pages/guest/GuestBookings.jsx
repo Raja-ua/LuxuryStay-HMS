@@ -44,7 +44,7 @@ const GuestBookings = () => {
               b.status === 'cancelled' ? 'bg-red-600' : 'bg-blue-600'
             }`}>
               <span className="font-bold uppercase tracking-wider text-sm">{b.status}</span>
-              <span className="font-semibold text-lg">${b.totalAmount}</span>
+              <span className="font-semibold text-lg">${Number(b.totalAmount || 0).toFixed(2)}</span>
             </div>
             
             <div className="p-6 flex-1 flex flex-col">
@@ -86,7 +86,7 @@ const GuestBookings = () => {
                 {b.remainingAmount > 0 && (
                   <div className="text-right flex flex-col">
                     <span className="text-xs text-red-500 uppercase tracking-wider font-bold mb-1">Due</span>
-                    <span className="text-sm font-bold text-red-600">${b.remainingAmount}</span>
+                    <span className="text-sm font-bold text-red-600">${Number(b.remainingAmount || 0).toFixed(2)}</span>
                   </div>
                 )}
               </div>

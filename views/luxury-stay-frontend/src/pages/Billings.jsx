@@ -172,16 +172,18 @@ const Billings = () => {
               {billings.map(b => (
                 <tr key={b._id} className="hover:bg-blue-50/30 transition-colors group">
                   <td className="p-5 font-bold text-gray-800">{b.guestId?.fullName || b.guestId?.name || 'Unknown'}</td>
-                  <td className="p-5 text-gray-600 font-medium">${b.roomCharges}</td>
-                  <td className="p-5 text-gray-600 font-medium">${b.additionalCharges}</td>
-                  <td className="p-5 font-bold text-blue-600">${b.totalAmount}</td>
-                  <td className="p-5 text-green-600 font-bold">${b.reservationId?.paidAmount || 0}</td>
+                  <td className="p-5 text-gray-600 font-medium">${Number(b.roomCharges || 0).toFixed(2)}</td>
+                  <td className="p-5 text-gray-600 font-medium">${Number(b.additionalCharges || 0).toFixed(2)}</td>
+                  <td className="p-5 font-bold text-blue-600">${Number(b.totalAmount || 0).toFixed(2)}</td>
+                  <td className="p-5 text-green-600 font-bold">${Number(b.reservationId?.paidAmount || 0).toFixed(2)}</td>
                   <td className="p-5">
                     {(() => {
                       const remaining = b.totalAmount - (b.reservationId?.paidAmount || 0);
                       return remaining < 0 
-                        ? <span className="text-purple-600 font-bold whitespace-nowrap">Refund: ${Math.abs(remaining)}</span>
-                        : <span className="text-red-500 font-bold">${remaining}</span>;
+                        ? <span className="text-purple-600 font-bold whitespace-nowrap">Refund: ${Math.abs(remaining).toFixed(2)}</span>
+                        : remaining === 0 
+                          ? <span className="bg-green-100 text-green-700 py-1 px-3 rounded-full text-xs font-bold border border-green-200">Cleared</span>
+                          : <span className="bg-red-100 text-red-700 py-1 px-3 rounded-full text-xs font-bold border border-red-200">Due: ${Number(remaining).toFixed(2)}</span>;
                     })()}
                   </td>
                   <td className="p-5">
@@ -305,20 +307,20 @@ const Billings = () => {
             <div className="border-t-2 border-b-2 border-gray-800 py-4 space-y-4">
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Room Charges</span>
-                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.roomCharges}</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.roomCharges || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Additional Charges</span>
-                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.additionalCharges}</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.additionalCharges || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-gray-600 uppercase tracking-wider text-sm">Tax Amount</span>
-                <span className="font-bold text-gray-900 text-lg">${selectedBillForPrint.taxAmount || 0}</span>
+                <span className="font-bold text-gray-900 text-lg">${Number(selectedBillForPrint.taxAmount || 0).toFixed(2)}</span>
               </div>
             </div>
             <div className="flex justify-between items-center border-b-2 border-gray-800 py-6 px-2 bg-gray-50">
               <span className="font-black text-xl text-gray-900 uppercase tracking-widest">Total Amount</span>
-              <span className="font-black text-4xl text-gray-900">${selectedBillForPrint.totalAmount}</span>
+              <span className="font-black text-4xl text-gray-900">${Number(selectedBillForPrint.totalAmount || 0).toFixed(2)}</span>
             </div>
           </div>
           

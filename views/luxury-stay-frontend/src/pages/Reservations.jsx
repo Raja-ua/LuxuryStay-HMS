@@ -214,7 +214,7 @@ const Reservations = () => {
                   <td className="p-5 font-medium text-gray-700">{r.roomId?.roomNumber || 'Unknown'}</td>
                   <td className="p-5 text-gray-600 font-medium">{new Date(r.checkInDate).toLocaleDateString()}</td>
                   <td className="p-5 text-gray-600 font-medium">{new Date(r.checkOutDate).toLocaleDateString()}</td>
-                  <td className="p-5 font-bold text-blue-600">${r.totalAmount}</td>
+                  <td className="p-5 font-bold text-blue-600">${Number(r.totalAmount || 0).toFixed(2)}</td>
                   <td className="p-5">
                     <div className="flex flex-col gap-1">
                       <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wide w-fit shadow-sm border ${
@@ -224,11 +224,12 @@ const Reservations = () => {
                       }`}>
                         {r.paymentStatus || 'Unpaid'}
                       </span>
-                      {r.paymentStatus === 'Refunded' && r.refundAmount > 0 && (
-                        <span className="text-xs text-purple-600 font-bold whitespace-nowrap">Refund: ${r.refundAmount}</span>
-                      )}
-                      {r.paymentStatus !== 'Paid' && r.paymentStatus !== 'Refunded' && (
-                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Due: ${(r.totalAmount - (r.paidAmount || 0))}</span>
+                      {r.paymentStatus === 'Paid' ? (
+                        <span className="text-xs text-green-600 font-bold whitespace-nowrap">Fully Paid</span>
+                      ) : r.paymentStatus === 'Refunded' ? (
+                        <span className="text-xs text-purple-600 font-bold whitespace-nowrap">Refund: ${Number(r.refundAmount || 0).toFixed(2)}</span>
+                      ) : (
+                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Due: ${Number(r.totalAmount - (r.paidAmount || 0)).toFixed(2)}</span>
                       )}
                     </div>
                   </td>
@@ -360,7 +361,7 @@ const Reservations = () => {
               {Number(formData.initialPaymentAmount) >= 0 && Number(formData.totalAmount) > 0 && (
                 <div className="bg-white text-blue-900 p-3 rounded-xl mt-4 border border-blue-200 shadow-sm flex justify-between items-center">
                   <span className="font-bold text-sm uppercase tracking-wider text-blue-700">Remaining Balance</span>
-                  <span className="text-xl font-black text-red-500">${Math.max(0, Number(formData.totalAmount) - (Number(formData.initialPaymentAmount) || 0))}</span>
+                  <span className="text-xl font-black text-red-500">${Math.max(0, Number(formData.totalAmount) - (Number(formData.initialPaymentAmount) || 0)).toFixed(2)}</span>
                 </div>
               )}
             </div>
@@ -371,31 +372,33 @@ const Reservations = () => {
 
       <Modal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} title="Add Payment">
         <form onSubmit={handlePaymentSubmit} className="space-y-6">
-          <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 grid grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
               <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Total Amount</p>
-              <p className="text-xl font-bold text-gray-700">${selectedResForPayment?.totalAmount || 0}</p>
+              <p className="text-xl font-bold text-gray-700">${Number(selectedResForPayment?.totalAmount || 0).toFixed(2)}</p>
             </div>
+            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+              <p className="text-sm font-bold text-green-700 uppercase tracking-wider mb-1">Paid Amount</p>
+              <p className="text-xl font-bold text-green-600">${Number(selectedResForPayment?.paidAmount || 0).toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div className="bg-red-50 p-6 rounded-2xl border border-red-100 flex items-center justify-between mb-6">
             <div>
-              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Already Paid</p>
-              <p className="text-xl font-bold text-green-600">${selectedResForPayment?.paidAmount || 0}</p>
-            </div>
-            <div className="col-span-2 mt-2 pt-4 border-t border-gray-200">
+              <p className="text-sm font-bold text-red-700 uppercase tracking-wider mb-1">Remaining Balance Due</p>
               {(() => {
                 const diff = selectedResForPayment ? (selectedResForPayment.totalAmount - (selectedResForPayment.paidAmount || 0)) : 0;
-                if (diff < 0) {
-                  return (
-                    <>
-                      <p className="text-sm text-purple-600 uppercase font-bold tracking-wider mb-1">Refund Due</p>
-                      <p className="text-3xl font-black text-purple-600">${Math.abs(diff)}</p>
-                    </>
-                  );
-                }
+                if (diff < 0) return (
+                  <div>
+                    <p className="text-3xl font-black text-purple-600">${Math.abs(diff).toFixed(2)}</p>
+                    <p className="text-xs text-purple-500 font-bold mt-1">Overpaid (Refund Due)</p>
+                  </div>
+                );
                 return (
-                  <>
-                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Current Due</p>
-                    <p className="text-3xl font-black text-red-500">${diff}</p>
-                  </>
+                  <div>
+                    <p className="text-3xl font-black text-red-500">${diff.toFixed(2)}</p>
+                    <p className="text-xs text-red-400 font-bold mt-1">Pending Collection</p>
+                  </div>
                 );
               })()}
             </div>
