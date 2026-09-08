@@ -19,7 +19,6 @@ const feedbackRoutes = require('./Routes/feedbackRoutes');
 const staffRoutes = require('./Routes/staffRoutes');
 const roleRoutes = require('./Routes/roleRoutes');
 const contactRoutes = require('./Routes/contactRoutes');
-const authRoutes = require('./Routes/authRoutes');
 const maintenanceRoutes = require('./Routes/maintenanceRoutes');
 const serviceRequestRoutes = require('./Routes/serviceRequestRoutes');
 
@@ -30,7 +29,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/billings', billingRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/services', serviceRequestRoutes);
 
