@@ -246,19 +246,24 @@ const Billings = () => {
           <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Status</label>
-              <input 
-                type="text" 
-                readOnly 
-                className={`w-full border p-3 rounded-xl font-bold uppercase tracking-wide cursor-not-allowed outline-none ${
-                  formData.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 
-                  formData.status === 'refunded' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                  'bg-amber-50 text-amber-700 border-amber-200'
+              <select 
+                className={`w-full border p-3 rounded-xl font-bold uppercase tracking-wide outline-none transition-all focus:ring-4 ${
+                  formData.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200 focus:ring-green-500/20 focus:border-green-500' : 
+                  formData.status === 'refunded' ? 'bg-purple-50 text-purple-700 border-purple-200 focus:ring-purple-500/20 focus:border-purple-500' :
+                  'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-500/20 focus:border-amber-500'
                 }`}
-                value={formData.status === 'paid' ? 'Paid' : (formData.status === 'refunded' ? 'Refunded' : 'Unpaid (Pending)')} 
-              />
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+              >
+                <option value="pending">Unpaid (Pending)</option>
+                <option value="paid">Paid</option>
+                <option value="refunded">Refunded</option>
+              </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Tax Amount ($)</label>
+              <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">
+                Tax Amount ($) <span className="text-gray-400 lowercase text-xs font-normal">({settings?.taxRate || 0}%)</span>
+              </label>
               <input required type="number" readOnly className="w-full bg-gray-100 border border-gray-200 text-gray-500 p-3 rounded-xl cursor-not-allowed outline-none" value={formData.taxAmount} />
             </div>
           </div>
