@@ -5,8 +5,10 @@ import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal';
+import { useSettings } from '../../context/SettingsContext';
 
 const PublicRooms = () => {
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,13 +69,16 @@ const PublicRooms = () => {
     setIsModalOpen(true);
   };
 
-  const calculateTotal = () => {
-    if (!bookingData.checkInDate || !bookingData.checkOutDate || !selectedRoom) return 0;
+  const getTotals = () => {
+    if (!bookingData.checkInDate || !bookingData.checkOutDate || !selectedRoom) return { subtotal: 0, tax: 0, total: 0 };
     const start = new Date(bookingData.checkInDate);
     const end = new Date(bookingData.checkOutDate);
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    return diffDays > 0 ? diffDays * selectedRoom.pricePerNight : selectedRoom.pricePerNight;
+    const subtotal = diffDays > 0 ? diffDays * selectedRoom.pricePerNight : selectedRoom.pricePerNight;
+    const taxRate = settings?.taxRate || 0;
+    const tax = subtotal * (taxRate / 100);
+    return { subtotal, tax, total: subtotal + tax };
   };
 
   const handleBookSubmit = async (e) => {
@@ -83,15 +88,15 @@ const PublicRooms = () => {
       return;
     }
     try {
-      const totalAmount = calculateTotal();
-      if (totalAmount <= 0) return toast.error('Invalid dates selected');
+      const { total } = getTotals();
+      if (total <= 0) return toast.error('Invalid dates selected');
       
       const payload = {
         guestId: user._id,
         roomId: selectedRoom._id,
         ...bookingData,
         status: 'pending',
-        totalAmount
+        totalAmount: total
       };
       
       await api.post('/reservations', payload);
@@ -196,8 +201,13 @@ const PublicRooms = () => {
               <p className="text-blue-700">${selectedRoom?.pricePerNight} / night</p>
             </div>
             <div className="text-right">
+              {getTotals().tax > 0 && (
+                <p className="text-xs text-blue-500 font-bold tracking-wider mb-1">
+                  Tax ({settings?.taxRate}%): ${getTotals().tax.toFixed(2)}
+                </p>
+              )}
               <p className="text-sm text-blue-600 uppercase font-bold tracking-wider mb-1">Total Estimated</p>
-              <p className="text-3xl font-black text-blue-900">${calculateTotal()}</p>
+              <p className="text-3xl font-black text-blue-900">${getTotals().total}</p>
             </div>
           </div>
 
@@ -261,10 +271,10 @@ const PublicRooms = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-gray-700 font-medium mb-1">Initial Payment Amount ($) *</label>
-                  <input required type="number" min="1" max={calculateTotal() || 99999} className="w-full border-gray-300 border p-3 rounded-none focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" placeholder="Minimum $1 required to book" value={bookingData.initialPaymentAmount} onChange={e => setBookingData({...bookingData, initialPaymentAmount: e.target.value})} />
-                  {bookingData.initialPaymentAmount && calculateTotal() > 0 && (
+                  <input required type="number" min="1" max={getTotals().total || 99999} className="w-full border-gray-300 border p-3 rounded-none focus:ring-2 focus:ring-blue-500 outline-none transition bg-gray-50" placeholder="Minimum $1 required to book" value={bookingData.initialPaymentAmount} onChange={e => setBookingData({...bookingData, initialPaymentAmount: e.target.value})} />
+                  {bookingData.initialPaymentAmount && getTotals().total > 0 && (
                     <p className="text-sm mt-2 text-gray-600 font-medium bg-orange-50 p-2 rounded-none border border-orange-100">
-                      Remaining Balance Due: <span className="text-red-500 font-bold">${Math.max(0, calculateTotal() - Number(bookingData.initialPaymentAmount))}</span>
+                      Remaining Balance Due: <span className="text-red-500 font-bold">${Math.max(0, getTotals().total - Number(bookingData.initialPaymentAmount)).toFixed(2)}</span>
                     </p>
                   )}
                 </div>
