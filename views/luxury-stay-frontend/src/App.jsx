@@ -29,6 +29,7 @@ import Feedbacks from './pages/Feedbacks';
 import Messages from './pages/Messages';
 import MaintenanceTasks from './pages/MaintenanceTasks';
 import ServiceRequests from './pages/ServiceRequests';
+import Settings from './pages/Settings';
 
 // Guest Private Pages
 import GuestBookings from './pages/guest/GuestBookings';
@@ -84,6 +85,7 @@ function App() {
           <Route path="services" element={<ServiceRequests />} />
           <Route path="feedbacks" element={<Feedbacks />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         
         <Route path="*" element={<NotFound />} />

@@ -3,12 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faHotel, faUser, faUserTie, faIdBadge, faBed, faClipboardList, 
   faSignOutAlt, faBroom, faMoneyBillWave, faCommentDots,
-  faBars, faGlobe, faEnvelope, faConciergeBell
+  faBars, faGlobe, faEnvelope, faConciergeBell, faCog
 } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 import Logo from '../components/Logo';
+import NotificationsDropdown from '../components/NotificationsDropdown';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ const AdminLayout = () => {
     !isMaintenanceStaff && { name: 'Users', path: '/admin/users', icon: faUser },
     isAdmin && { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
     isAdmin && { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
+    isAdmin && { name: 'Settings', path: '/admin/settings', icon: faCog },
   ].filter(Boolean);
 
   return (
@@ -120,14 +122,21 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        {/* Mobile Header */}
-        <header className="bg-white/80 backdrop-blur-md shadow-sm p-4 flex justify-between items-center md:hidden sticky top-0 z-20 print:hidden">
-          <div className="flex items-center">
+        {/* Header (Desktop & Mobile) */}
+        <header className="bg-white/80 backdrop-blur-md shadow-sm p-4 flex justify-between items-center sticky top-0 z-20 print:hidden">
+          <div className="flex items-center md:hidden">
             <Logo size="md" isDark={true} />
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
-            <FontAwesomeIcon icon={faBars} />
-          </button>
+          <div className="hidden md:block">
+            {/* Empty space for desktop left side */}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <NotificationsDropdown userRole={userRole} />
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="md:hidden w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center">
+              <FontAwesomeIcon icon={faBars} />
+            </button>
+          </div>
         </header>
         
         {/* Mobile Sidebar */}

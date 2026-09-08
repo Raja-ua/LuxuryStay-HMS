@@ -21,6 +21,8 @@ const roleRoutes = require('./Routes/roleRoutes');
 const contactRoutes = require('./Routes/contactRoutes');
 const maintenanceRoutes = require('./Routes/maintenanceRoutes');
 const serviceRequestRoutes = require('./Routes/serviceRequestRoutes');
+const settingsRoutes = require('./Routes/settingsRoutes');
+const notificationRoutes = require('./Routes/notificationRoutes');
 
 app.use('/api/rooms', roomRoutes);
 app.use('/api/staff', staffRoutes);
@@ -31,6 +33,8 @@ app.use('/api/billings', billingRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/services', serviceRequestRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Other routes kept for compatibility
 app.use('/api/contacts', contactRoutes);

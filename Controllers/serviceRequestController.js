@@ -1,9 +1,18 @@
 const ServiceRequest = require('../Model/ServiceRequest');
+const Notification = require('../Model/Notification');
 
 exports.createRequest = async (req, res) => {
     try {
         const newRequest = new ServiceRequest(req.body);
         await newRequest.save();
+
+        await Notification.create({
+            recipientRole: 'admin',
+            title: 'New Service Request',
+            message: `A guest requested ${req.body.serviceType}.`,
+            link: '/admin/services'
+        });
+
         res.status(201).json({ message: "Service request submitted successfully", data: newRequest });
     } catch (error) {
         res.status(500).json({ error: error.message });

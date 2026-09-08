@@ -1,5 +1,6 @@
 const Maintenance = require('../Model/Maintenance');
 const Room = require('../Model/Room');
+const Notification = require('../Model/Notification');
 
 exports.createMaintenanceRequest = async (req, res) => {
     try {
@@ -12,6 +13,14 @@ exports.createMaintenanceRequest = async (req, res) => {
         } else if (req.body.issueType === 'Cleaning') {
             await Room.findByIdAndUpdate(req.body.roomId, { status: 'cleaning' });
         }
+
+        // Send Notification
+        await Notification.create({
+            recipientRole: 'admin',
+            title: 'New Issue Reported',
+            message: `A new ${req.body.issueType || 'Maintenance'} task was reported for a room.`,
+            link: '/admin/maintenance'
+        });
 
         res.status(201).json({ message: "Maintenance request created successfully", data: newRequest });
     } catch (error) {
