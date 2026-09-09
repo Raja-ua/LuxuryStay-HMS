@@ -43,7 +43,11 @@ export const calculateDynamicPricing = (basePricePerNight, checkIn, checkOut, se
         currentDate.setDate(start.getDate() + i);
 
         const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
-        const dateString = currentDate.toISOString().split('T')[0];
+        // Format to YYYY-MM-DD using local time to prevent timezone shift issues
+        const yyyy = currentDate.getFullYear();
+        const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(currentDate.getDate()).padStart(2, '0');
+        const dateString = `${yyyy}-${mm}-${dd}`;
 
         let nightPrice = basePricePerNight;
         let isHoliday = holidays.includes(dateString);
