@@ -35,6 +35,7 @@ app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/services', serviceRequestRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/analytics', require('./Routes/analyticsRoutes'));
 
 // Other routes kept for compatibility
 app.use('/api/contacts', contactRoutes);

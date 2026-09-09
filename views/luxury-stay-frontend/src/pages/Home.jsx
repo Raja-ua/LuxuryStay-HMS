@@ -4,6 +4,9 @@ import { faBed, faUsers, faConciergeBell, faCalendarPlus, faClipboardList, faCom
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import NotificationsDropdown from '../components/NotificationsDropdown';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -12,12 +15,18 @@ const Home = () => {
     totalBookings: 0,
     availableRooms: 0,
     occupiedRooms: 0,
+    occupancyRate: 0,
     cleaningRooms: 0,
     maintenanceRooms: 0,
     totalGuests: 0,
     totalStaff: 0
   });
-  const [chartData, setChartData] = useState([]);
+  
+  const [charts, setCharts] = useState({
+    revenueTrendData: [],
+    roomStatusData: [],
+    bookingStatusData: []
+  });
 
   useEffect(() => {
     const loggedUser = localStorage.getItem('user');
@@ -28,56 +37,33 @@ const Home = () => {
     if (user && user.role !== 'guest') {
       const fetchStats = async () => {
         try {
-          const [resData, roomData, userData, staffData] = await Promise.all([
-            api.get('/reservations'),
-            api.get('/rooms'),
+          const [analyticsRes, userData, staffData] = await Promise.all([
+            api.get('/analytics'),
             api.get('/users'),
             api.get('/staff')
           ]);
 
-          const reservations = resData.data;
-          const rooms = roomData.data;
+          const { kpis, charts: chartsData } = analyticsRes.data;
           const users = userData.data;
           const staff = staffData.data;
 
-          const totalRevenue = reservations.reduce((acc, curr) => acc + (curr.paidAmount || 0), 0);
-          const availableRooms = rooms.filter(r => r.status === 'available').length;
-          const occupiedRooms = rooms.filter(r => r.status === 'occupied').length;
-          const cleaningRooms = rooms.filter(r => r.status === 'cleaning').length;
-          const maintenanceRooms = rooms.filter(r => r.status === 'maintenance').length;
-          const totalGuests = users.filter(u => u.role === 'guest').length;
-          const totalStaff = staff.length;
-
           setStats({
-            totalRevenue,
-            totalBookings: reservations.length,
-            availableRooms,
-            occupiedRooms,
-            cleaningRooms,
-            maintenanceRooms,
-            totalGuests,
-            totalStaff
+            totalRevenue: kpis.totalRevenue || 0,
+            totalBookings: chartsData.bookingStatusData.reduce((acc, curr) => acc + curr.value, 0),
+            availableRooms: kpis.availableRooms || 0,
+            occupiedRooms: kpis.occupiedRooms || 0,
+            occupancyRate: kpis.occupancyRate || 0,
+            cleaningRooms: (chartsData.roomStatusData.find(r => r.name === 'Cleaning') || {}).value || 0,
+            maintenanceRooms: (chartsData.roomStatusData.find(r => r.name === 'Maintenance') || {}).value || 0,
+            totalGuests: users.filter(u => u.role === 'guest').length,
+            totalStaff: staff.length
           });
 
-          // Prepare chart data (Group revenue by date)
-          const last7Days = {};
-          for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            last7Days[d.toISOString().split('T')[0]] = { name: d.toLocaleDateString('en-US', { weekday: 'short' }), Revenue: 0, Bookings: 0 };
-          }
-
-          reservations.forEach(r => {
-            if (r.createdAt) {
-              const dateStr = r.createdAt.split('T')[0];
-              if (last7Days[dateStr]) {
-                last7Days[dateStr].Revenue += (r.paidAmount || 0);
-                last7Days[dateStr].Bookings += 1;
-              }
-            }
+          setCharts({
+            revenueTrendData: chartsData.revenueTrendData || [],
+            roomStatusData: chartsData.roomStatusData || [],
+            bookingStatusData: chartsData.bookingStatusData || []
           });
-
-          setChartData(Object.values(last7Days));
 
         } catch (err) {
           console.error("Failed to fetch stats", err);
@@ -195,60 +181,56 @@ const Home = () => {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Revenue Chart (Tailwind) */}
+            
+            {/* Revenue Trend Line Chart */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <FontAwesomeIcon icon={faChartLine} className="text-blue-500" /> Revenue (Last 7 Days)
+                <FontAwesomeIcon icon={faChartLine} className="text-blue-500" /> Monthly Revenue Trend
               </h3>
-              <div className="h-64 flex items-end gap-2 justify-between">
-                {chartData.map((d, i) => {
-                  const maxRev = Math.max(...chartData.map(c => c.Revenue), 1); // prevent division by zero
-                  const heightPct = Math.max((d.Revenue / maxRev) * 100, 5); // min 5% height for visibility
-                  return (
-                    <div key={i} className="flex flex-col items-center flex-1 group">
-                      <div className="w-full relative flex justify-center items-end h-48 bg-gray-50 rounded-t-lg">
-                        <div 
-                          className="w-full bg-blue-500 rounded-t-lg transition-all duration-300 group-hover:bg-blue-600"
-                          style={{ height: `${heightPct}%` }}
-                        ></div>
-                        {/* Tooltip */}
-                        <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
-                          ${d.Revenue}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 mt-2 font-medium">{d.name}</span>
-                    </div>
-                  );
-                })}
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={charts.revenueTrendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} tickFormatter={(value) => `$${value}`} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                      formatter={(value) => [`$${value}`, 'Revenue']}
+                    />
+                    <Line type="monotone" dataKey="Revenue" stroke="#3b82f6" strokeWidth={3} dot={{r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff'}} activeDot={{r: 6}} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Bookings Trend (Tailwind) */}
+            {/* Room Status Doughnut Chart */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <FontAwesomeIcon icon={faCalendarPlus} className="text-green-500" /> Bookings (Last 7 Days)
+                <FontAwesomeIcon icon={faDoorOpen} className="text-indigo-500" /> Room Occupancy Overview
               </h3>
-              <div className="h-64 flex items-end gap-2 justify-between">
-                {chartData.map((d, i) => {
-                  const maxBookings = Math.max(...chartData.map(c => c.Bookings), 1);
-                  const heightPct = Math.max((d.Bookings / maxBookings) * 100, 5);
-                  return (
-                    <div key={i} className="flex flex-col items-center flex-1 group">
-                      <div className="w-full relative flex justify-center items-end h-48 bg-gray-50 rounded-t-lg">
-                        <div 
-                          className="w-full bg-green-500 rounded-t-lg transition-all duration-300 group-hover:bg-green-600"
-                          style={{ height: `${heightPct}%` }}
-                        ></div>
-                        <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
-                          {d.Bookings} Bookings
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 mt-2 font-medium">{d.name}</span>
-                    </div>
-                  );
-                })}
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={charts.roomStatusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={70}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {charts.roomStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             </div>
+
           </div>
 
           {/* Quick Links */}
