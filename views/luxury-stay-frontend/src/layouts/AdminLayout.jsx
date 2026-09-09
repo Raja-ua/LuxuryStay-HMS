@@ -1,13 +1,9 @@
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faHotel, faUser, faUserTie, faIdBadge, faBed, faClipboardList, 
-  faSignOutAlt, faBroom, faMoneyBillWave, faCommentDots,
-  faBars, faGlobe, faEnvelope, faConciergeBell, faCog
-} from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHotel, faBed, faClipboardList, faMoneyBillWave, faUser, faCog, faSignOutAlt, faBars, faGlobe, faUserTie, faEnvelope, faCommentDots, faBroom, faConciergeBell, faIdBadge, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import toast from 'react-hot-toast';
-
+import api from '../services/api';
 import Logo from '../components/Logo';
 
 const AdminLayout = () => {
@@ -15,52 +11,86 @@ const AdminLayout = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [permissions, setPermissions] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
 
   useEffect(() => {
     const loggedUser = localStorage.getItem('user');
     if (!loggedUser) {
       navigate('/login');
-    } else {
-      const parsed = JSON.parse(loggedUser);
-      if (parsed.role === 'guest') {
-        toast.error('Unauthorized access');
-        navigate('/');
-      } else {
-        setUser(parsed);
-        // Redirect maintenance staff away from the main dashboard
-        const role = parsed.role?.toLowerCase() || '';
-        const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(role);
-        if (isMaint && location.pathname === '/admin') {
-          navigate('/admin/maintenance');
+      return;
+    }
+    
+    const parsed = JSON.parse(loggedUser);
+    if (parsed.role === 'guest') {
+      toast.error('Unauthorized access');
+      navigate('/');
+      return;
+    }
+    
+    setUser(parsed);
+
+    // Fetch roles to get current user's permissions
+    const fetchRolePermissions = async () => {
+      try {
+        const { data } = await api.get('/roles');
+        const myRole = data.find(r => r.name.toLowerCase() === parsed.role.toLowerCase());
+        
+        if (parsed.role.toLowerCase() === 'admin') {
+          // Admin gets everything
+          setPermissions(['view_dashboard', 'manage_reservations', 'manage_rooms', 'manage_guests', 'manage_staff', 'manage_billing', 'manage_maintenance', 'manage_settings', 'manage_roles']);
+        } else if (myRole && myRole.permissions) {
+          setPermissions(myRole.permissions);
+        } else {
+          // Fallback basic permissions based on old hardcoded logic
+          const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(parsed.role.toLowerCase());
+          setPermissions(isMaint ? ['manage_maintenance'] : ['view_dashboard', 'manage_reservations', 'manage_rooms', 'manage_billing', 'manage_maintenance', 'manage_guests']);
         }
+      } catch (error) {
+        console.error('Failed to load permissions');
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    fetchRolePermissions();
+  }, [navigate]);
+
+  useEffect(() => {
+    // Basic route protection based on permissions
+    if (!loadingRoles && permissions.length > 0) {
+      const path = location.pathname;
+      
+      // Auto-redirect if they land on /admin but lack dashboard view
+      if (path === '/admin' && !permissions.includes('view_dashboard')) {
+        if (permissions.includes('manage_maintenance')) navigate('/admin/maintenance');
+        else if (permissions.includes('manage_reservations')) navigate('/admin/reservations');
       }
     }
-  }, [navigate, location.pathname]);
+  }, [location.pathname, loadingRoles, permissions, navigate, user]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/login');
   };
 
-  if (!user || user.role === 'guest') return null;
+  if (!user || user.role === 'guest' || loadingRoles) return <div className="h-screen flex items-center justify-center bg-gray-50"><FontAwesomeIcon icon={faCog} className="animate-spin text-4xl text-blue-500" /></div>;
 
-  const userRole = user.role?.toLowerCase() || '';
-  const isAdmin = userRole === 'admin';
-  const isMaintenanceStaff = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(userRole);
+  const hasPerm = (perm) => permissions.includes(perm);
 
   const adminLinks = [
-    !isMaintenanceStaff && { name: 'Dashboard', path: '/admin', icon: faHotel },
-    !isMaintenanceStaff && { name: 'Rooms', path: '/admin/rooms', icon: faBed },
-    !isMaintenanceStaff && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
-    !isMaintenanceStaff && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
-    { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
-    !isMaintenanceStaff && { name: 'Guest Services', path: '/admin/services', icon: faConciergeBell },
-    !isMaintenanceStaff && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
-    !isMaintenanceStaff && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
-    !isMaintenanceStaff && { name: 'Users', path: '/admin/users', icon: faUser },
-    isAdmin && { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
-    isAdmin && { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
-    isAdmin && { name: 'Settings', path: '/admin/settings', icon: faCog },
+    hasPerm('view_dashboard') && { name: 'Dashboard', path: '/admin', icon: faHotel },
+    hasPerm('manage_rooms') && { name: 'Rooms', path: '/admin/rooms', icon: faBed },
+    hasPerm('manage_reservations') && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
+    hasPerm('manage_billing') && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
+    hasPerm('manage_maintenance') && { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
+    hasPerm('manage_maintenance') && { name: 'Guest Services', path: '/admin/services', icon: faConciergeBell },
+    hasPerm('manage_guests') && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
+    hasPerm('manage_guests') && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
+    hasPerm('manage_guests') && { name: 'Users', path: '/admin/users', icon: faUser },
+    hasPerm('manage_staff') && { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
+    hasPerm('manage_roles') && { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
+    hasPerm('manage_settings') && { name: 'Settings', path: '/admin/settings', icon: faCog },
   ].filter(Boolean);
 
   return (
@@ -108,7 +138,7 @@ const AdminLayout = () => {
           })}
         </nav>
         <div className="p-4 border-t border-gray-800 space-y-3 bg-gray-900/50">
-          {!isMaintenanceStaff && (
+          {hasPerm('view_dashboard') && (
             <Link to="/" className="w-full flex items-center justify-center gap-2 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white py-3.5 rounded-xl transition-all font-semibold hover:shadow-lg">
               <FontAwesomeIcon icon={faGlobe} /> Public Website
             </Link>
@@ -160,7 +190,7 @@ const AdminLayout = () => {
               ))}
             </nav>
             <div className="p-6 border-t border-gray-800 space-y-3">
-              {!isMaintenanceStaff && (
+              {hasPerm('view_dashboard') && (
                 <Link to="/" className="w-full flex justify-center py-4 bg-gray-800 rounded-xl font-bold"><FontAwesomeIcon icon={faGlobe} className="mr-2" /> View Website</Link>
               )}
               <button onClick={handleLogout} className="w-full py-4 bg-red-600 rounded-xl font-bold"><FontAwesomeIcon icon={faSignOutAlt} className="mr-2" /> Logout</button>
