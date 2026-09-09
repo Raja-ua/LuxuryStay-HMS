@@ -342,7 +342,7 @@ const Reservations = () => {
               {formData.breakdown && !editingRes && (
                 <div className="mt-2 text-xs text-gray-500 bg-gray-100 p-3 rounded-lg border border-gray-200">
                   <p className="font-bold text-gray-700 mb-1 border-b pb-1">Dynamic Pricing Applied</p>
-                  <p>Standard: {formData.breakdown.standardNights} nights (${formData.breakdown.standardTotal.toFixed(2)})</p>
+                  <p>Base Rate: {formData.breakdown.standardNights} Nights (${formData.breakdown.standardTotal.toFixed(2)})</p>
                   {formData.breakdown.weekendNights > 0 && <p className="text-orange-600">Weekend Surge: {formData.breakdown.weekendNights} nights (+${formData.breakdown.weekendSurchargeAmount.toFixed(2)})</p>}
                   {formData.breakdown.holidayNights > 0 && <p className="text-purple-600">Holiday Surge: {formData.breakdown.holidayNights} nights (+${formData.breakdown.holidaySurchargeAmount.toFixed(2)})</p>}
                   <p className="mt-1 font-semibold text-gray-700">Taxes ({settings?.taxRate}%): ${formData.tax?.toFixed(2)}</p>

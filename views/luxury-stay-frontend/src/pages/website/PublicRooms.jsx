@@ -277,7 +277,7 @@ const PublicRooms = () => {
                 {getTotals().breakdown && (
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
-                      <span>Standard Nights ({getTotals().breakdown.standardNights} x ${selectedRoom.pricePerNight})</span>
+                      <span>Base Room Rate ({getTotals().breakdown.standardNights} Nights x ${selectedRoom.pricePerNight})</span>
                       <span>${getTotals().breakdown.standardTotal.toFixed(2)}</span>
                     </div>
                     {getTotals().breakdown.weekendNights > 0 && (

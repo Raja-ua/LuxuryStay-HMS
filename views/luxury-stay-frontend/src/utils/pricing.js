@@ -53,21 +53,20 @@ export const calculateDynamicPricing = (basePricePerNight, checkIn, checkOut, se
         let isHoliday = holidays.includes(dateString);
         let isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
+        // Base price applies to every night
+        breakdown.standardNights += 1;
+        breakdown.standardTotal += basePricePerNight;
+
         if (isHoliday) {
             const surcharge = basePricePerNight * (holidaySurchargePct / 100);
             nightPrice += surcharge;
             breakdown.holidayNights += 1;
             breakdown.holidaySurchargeAmount += surcharge;
-            // Note: If it's both holiday and weekend, we apply holiday surcharge only (or higher).
-            // Here we prioritize Holiday surcharge over Weekend surcharge.
         } else if (isWeekend) {
             const surcharge = basePricePerNight * (weekendSurchargePct / 100);
             nightPrice += surcharge;
             breakdown.weekendNights += 1;
             breakdown.weekendSurchargeAmount += surcharge;
-        } else {
-            breakdown.standardNights += 1;
-            breakdown.standardTotal += basePricePerNight;
         }
 
         subTotal += nightPrice;
