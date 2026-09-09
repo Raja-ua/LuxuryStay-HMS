@@ -6,8 +6,11 @@ import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faMoneyBill, faMoneyBillWave, faEye, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useSettings } from '../context/SettingsContext';
+import { calculateDynamicPricing } from '../utils/pricing';
 
 const Reservations = () => {
+  const { settings } = useSettings();
   const [reservations, setReservations] = useState([]);
   const [rooms, setRooms] = useState([]);
   const location = useLocation();
@@ -50,18 +53,14 @@ const Reservations = () => {
   }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
-    if (!editingRes && formData.roomId && formData.checkInDate && formData.checkOutDate) {
+    if (!editingRes && formData.roomId && formData.checkInDate && formData.checkOutDate && settings) {
       const room = rooms.find(r => r._id === formData.roomId);
       if (room) {
-        const start = new Date(formData.checkInDate);
-        const end = new Date(formData.checkOutDate);
-        const diffTime = Math.abs(end - start);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const total = diffDays > 0 ? diffDays * room.pricePerNight : room.pricePerNight;
-        setFormData(prev => ({ ...prev, totalAmount: total }));
+        const pricing = calculateDynamicPricing(room.pricePerNight, formData.checkInDate, formData.checkOutDate, settings);
+        setFormData(prev => ({ ...prev, totalAmount: pricing.grandTotal, breakdown: pricing.breakdown, subtotal: pricing.subTotal, tax: pricing.taxTotal }));
       }
     }
-  }, [formData.roomId, formData.checkInDate, formData.checkOutDate, rooms, editingRes]);
+  }, [formData.roomId, formData.checkInDate, formData.checkOutDate, rooms, editingRes, settings]);
 
   const openAddModal = () => {
     setEditingRes(null);
@@ -339,7 +338,16 @@ const Reservations = () => {
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Total Amount ($) *</label>
-              <input required type="number" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.totalAmount} onChange={e => setFormData({...formData, totalAmount: e.target.value})} />
+              <input required type="number" step="0.01" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.totalAmount} onChange={e => setFormData({...formData, totalAmount: e.target.value})} />
+              {formData.breakdown && !editingRes && (
+                <div className="mt-2 text-xs text-gray-500 bg-gray-100 p-3 rounded-lg border border-gray-200">
+                  <p className="font-bold text-gray-700 mb-1 border-b pb-1">Dynamic Pricing Applied</p>
+                  <p>Standard: {formData.breakdown.standardNights} nights (${formData.breakdown.standardTotal.toFixed(2)})</p>
+                  {formData.breakdown.weekendNights > 0 && <p className="text-orange-600">Weekend Surge: {formData.breakdown.weekendNights} nights (+${formData.breakdown.weekendSurchargeAmount.toFixed(2)})</p>}
+                  {formData.breakdown.holidayNights > 0 && <p className="text-purple-600">Holiday Surge: {formData.breakdown.holidayNights} nights (+${formData.breakdown.holidaySurchargeAmount.toFixed(2)})</p>}
+                  <p className="mt-1 font-semibold text-gray-700">Taxes ({settings?.taxRate}%): ${formData.tax?.toFixed(2)}</p>
+                </div>
+              )}
             </div>
           </div>
           

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal';
 import { useSettings } from '../../context/SettingsContext';
+import { calculateDynamicPricing } from '../../utils/pricing';
 
 const PublicRooms = () => {
   const { settings } = useSettings();
@@ -70,15 +71,16 @@ const PublicRooms = () => {
   };
 
   const getTotals = () => {
-    if (!bookingData.checkInDate || !bookingData.checkOutDate || !selectedRoom) return { subtotal: 0, tax: 0, total: 0 };
-    const start = new Date(bookingData.checkInDate);
-    const end = new Date(bookingData.checkOutDate);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    const subtotal = diffDays > 0 ? diffDays * selectedRoom.pricePerNight : selectedRoom.pricePerNight;
-    const taxRate = settings?.taxRate || 0;
-    const tax = subtotal * (taxRate / 100);
-    return { subtotal, tax, total: subtotal + tax };
+    if (!bookingData.checkInDate || !bookingData.checkOutDate || !selectedRoom || !settings) {
+      return { subtotal: 0, tax: 0, total: 0, breakdown: null };
+    }
+    const pricing = calculateDynamicPricing(selectedRoom.pricePerNight, bookingData.checkInDate, bookingData.checkOutDate, settings);
+    return { 
+      subtotal: pricing.subTotal, 
+      tax: pricing.taxTotal, 
+      total: pricing.grandTotal,
+      breakdown: pricing.breakdown
+    };
   };
 
   const handleBookSubmit = async (e) => {
@@ -267,7 +269,45 @@ const PublicRooms = () => {
 
           {currentStep === 3 && (
             <div className="space-y-4 animate-fade-in-up">
-              <h3 className="font-bold text-gray-800 text-lg border-b pb-2">Step 3: Payment Setup</h3>
+              <h3 className="font-bold text-gray-800 text-lg border-b pb-2">Step 3: Booking Summary & Payment</h3>
+              
+              {/* Dynamic Pricing Summary */}
+              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
+                <h4 className="font-bold text-gray-800 mb-3">Pricing Breakdown</h4>
+                {getTotals().breakdown && (
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Standard Nights ({getTotals().breakdown.standardNights} x ${selectedRoom.pricePerNight})</span>
+                      <span>${getTotals().breakdown.standardTotal.toFixed(2)}</span>
+                    </div>
+                    {getTotals().breakdown.weekendNights > 0 && (
+                      <div className="flex justify-between text-orange-600">
+                        <span>Weekend Surcharge ({getTotals().breakdown.weekendNights} nights)</span>
+                        <span>+ ${getTotals().breakdown.weekendSurchargeAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {getTotals().breakdown.holidayNights > 0 && (
+                      <div className="flex justify-between text-purple-600">
+                        <span>Holiday Surcharge ({getTotals().breakdown.holidayNights} nights)</span>
+                        <span>+ ${getTotals().breakdown.holidaySurchargeAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="font-semibold">Subtotal</span>
+                      <span className="font-semibold">${getTotals().subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Taxes ({settings?.taxRate || 0}%)</span>
+                      <span>${getTotals().tax.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2 text-lg font-black text-gray-900">
+                      <span>Grand Total</span>
+                      <span>${getTotals().total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
                 <div>
                   <label className="block text-gray-700 font-medium mb-1">Initial Payment Amount ($) *</label>
