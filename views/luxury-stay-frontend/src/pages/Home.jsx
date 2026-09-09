@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faUsers, faConciergeBell, faCalendarPlus, faClipboardList, faCommentDots, faChartLine, faDoorOpen, faMoneyBillWave, faBroom, faWrench, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import NotificationsDropdown from '../components/NotificationsDropdown';
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -101,6 +102,9 @@ const Home = () => {
               ? "Here's what's happening at your hotel today."
               : "Experience luxury and comfort. Book your stay, manage your reservations, and explore our world-class amenities."}
           </p>
+        </div>
+        <div>
+          <NotificationsDropdown userRole={user.role?.toLowerCase() || ''} darkTheme={true} />
         </div>
       </div>
 

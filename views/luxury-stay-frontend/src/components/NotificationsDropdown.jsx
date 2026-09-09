@@ -4,7 +4,7 @@ import { faBell, faCheckDouble } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 
-const NotificationsDropdown = ({ userRole }) => {
+const NotificationsDropdown = ({ userRole, darkTheme = false }) => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -37,6 +37,19 @@ const NotificationsDropdown = ({ userRole }) => {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  const markAllAsRead = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await api.put(`/notifications/role/${userRole || 'admin'}/read-all`);
+      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+    } catch (error) {
+      console.error('Failed to mark all as read');
+    }
+  };
+
   const handleMarkAsRead = async (id, e) => {
     if (e) {
       e.preventDefault();
@@ -50,26 +63,19 @@ const NotificationsDropdown = ({ userRole }) => {
     }
   };
 
-  const handleMarkAllRead = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await api.put(`/notifications/role/${userRole || 'admin'}/read-all`);
-      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-500 hover:text-blue-600 transition-colors bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        className={`relative p-2 transition-colors rounded-full w-12 h-12 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+          darkTheme 
+            ? 'text-white bg-white/10 hover:bg-white/20 border border-white/20' 
+            : 'text-gray-500 hover:text-blue-600 bg-gray-100'
+        }`}
       >
-        <FontAwesomeIcon icon={faBell} />
+        <FontAwesomeIcon icon={faBell} className="text-xl" />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-white text-[10px] font-bold border-2 border-white flex items-center justify-center shadow-sm transform translate-x-1 -translate-y-1">
+          <span className={`absolute top-0 right-0 block h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold border-2 flex items-center justify-center shadow-sm transform ${darkTheme ? 'border-gray-800' : 'border-white'}`}>
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -81,7 +87,7 @@ const NotificationsDropdown = ({ userRole }) => {
             <h3 className="font-bold text-gray-800">Notifications</h3>
             {unreadCount > 0 && (
               <button 
-                onClick={handleMarkAllRead}
+                onClick={markAllAsRead}
                 className="text-xs text-blue-600 font-bold hover:text-blue-800 transition-colors flex items-center gap-1"
               >
                 <FontAwesomeIcon icon={faCheckDouble} /> Mark all read

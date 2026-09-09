@@ -5,8 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 
 import Logo from '../components/Logo';
+import { useSettings } from '../context/SettingsContext';
 
 const WebsiteLayout = () => {
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -308,6 +310,11 @@ const WebsiteLayout = () => {
                 <li><Link to="/login" className="hover:text-[#937648] transition">Manage bookings</Link></li>
                 <li><Link to="/contact-us" className="hover:text-[#937648] transition">Contact us</Link></li>
               </ul>
+              <div className="mt-8 p-4 bg-white/50 rounded-xl border border-[#1b3658]/10 text-sm">
+                <h4 className="font-bold mb-2 text-[#1b3658]">Hotel Policies</h4>
+                <p className="text-gray-600 mb-1"><strong>Check-out:</strong> {settings?.checkoutTime || '12:00 PM'}</p>
+                <p className="text-gray-600"><strong>Cancellation:</strong> {settings?.cancellationPolicy || 'Standard rules apply.'}</p>
+              </div>
             </div>
           </div>
 
