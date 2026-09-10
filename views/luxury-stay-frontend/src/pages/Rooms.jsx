@@ -184,15 +184,13 @@ const Rooms = () => {
                       value={room.status}
                       onChange={(e) => handleStatusChange(room._id, e.target.value)}
                       className={`px-3 py-1.5 rounded-full text-xs font-bold tracking-wide shadow-sm cursor-pointer outline-none status-select ${
-                        room.status === 'available' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        room.status === 'occupied' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                        room.status === 'cleaning' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                        'bg-red-100 text-red-700 border border-red-200'
+                          room.status === 'available' ? 'bg-green-100 text-green-700 border border-green-200' :
+                          room.status === 'occupied' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                          'bg-red-100 text-red-700 border border-red-200'
                       }`}
                     >
                       <option value="available">AVAILABLE</option>
                       <option value="occupied">OCCUPIED</option>
-                      <option value="cleaning">CLEANING</option>
                       <option value="maintenance">MAINTENANCE</option>
                     </select>
                   </td>
@@ -241,7 +239,7 @@ const Rooms = () => {
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Status</label>
               <select className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                <option value="available">Available</option><option value="occupied">Occupied</option><option value="cleaning">Cleaning</option><option value="maintenance">Maintenance</option>
+                <option value="available">Available</option><option value="occupied">Occupied</option><option value="maintenance">Maintenance</option>
               </select>
             </div>
             <div>
