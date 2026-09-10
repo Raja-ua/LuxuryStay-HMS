@@ -112,7 +112,7 @@ const AdminLayout = () => {
     return adminLinks.map((link) => {
       if (link.subLinks) {
         const isActiveParent = link.subLinks.some(sub => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/'));
-        const isOpen = openMenus[link.name] || isActiveParent;
+        const isOpen = openMenus[link.name] !== undefined ? openMenus[link.name] : isActiveParent;
         
         return (
           <div key={link.name} className="flex flex-col">
@@ -120,12 +120,12 @@ const AdminLayout = () => {
               onClick={() => toggleMenu(link.name)}
               className={`flex items-center justify-between w-full p-4 rounded-xl transition-all duration-300 ${
                 isActiveParent 
-                  ? 'bg-yellow-600/20 text-yellow-500 font-bold' 
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold' 
                   : 'text-gray-400 hover:bg-gray-800 hover:text-white font-medium hover:translate-x-1'
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className={`flex items-center justify-center w-6 ${isActiveParent ? 'text-yellow-500' : 'text-gray-500'}`}>
+                <div className={`flex items-center justify-center w-6 ${isActiveParent ? 'text-white' : 'text-gray-500'}`}>
                   <FontAwesomeIcon icon={link.icon} className={isMobile ? "text-xl" : "text-lg"} />
                 </div>
                 {link.name}
@@ -151,7 +151,7 @@ const AdminLayout = () => {
                           : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSubActive ? 'bg-yellow-500' : 'bg-gray-600'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSubActive ? 'bg-blue-500' : 'bg-gray-600'}`}></span>
                       {sub.name}
                     </Link>
                   );
