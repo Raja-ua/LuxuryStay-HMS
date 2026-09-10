@@ -3,7 +3,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faShieldAlt, faCheck, faSave, faPlus, faTrash, 
+  faShieldAlt, faCheck, faSave, faPlus, faTrash, faEdit,
   faHotel, faClipboardList, faUser, faBed, faCog, faSyncAlt,
   faMoneyBillWave, faBroom, faUserTie 
 } from '@fortawesome/free-solid-svg-icons';
@@ -63,15 +63,18 @@ const Roles = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editRoleId, setEditRoleId] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '', permissions: [] });
 
   const fetchRoles = async () => {
     try {
       const { data } = await api.get('/roles');
-      setRoles(data);
-      if (data.length > 0 && !selectedRole) setSelectedRole(data[0]);
+      setRoles(data || []);
+      if (data && data.length > 0 && !selectedRole) setSelectedRole(data[0]);
     } catch (error) {
       toast.error('Failed to fetch roles');
+      setRoles([]);
     } finally {
       setLoading(false);
     }
@@ -110,20 +113,40 @@ const Roles = () => {
     setSelectedRole({ ...selectedRole, permissions: updatedPerms });
   };
 
-  const handleAddRole = async (e) => {
+  const handleOpenCreateModal = () => {
+    setIsEditMode(false);
+    setEditRoleId(null);
+    setFormData({ name: '', description: '', permissions: [] });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (role, e) => {
+    e.stopPropagation(); // prevent row click selection
+    setIsEditMode(true);
+    setEditRoleId(role._id);
+    setFormData({ name: role.name, description: role.description || '', permissions: role.permissions || [] });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveRole = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/roles', formData);
-      toast.success('Role added successfully');
+      if (isEditMode) {
+        await api.put(`/roles/${editRoleId}`, formData);
+        toast.success('Role updated successfully');
+      } else {
+        await api.post('/roles', formData);
+        toast.success('Role added successfully');
+      }
       setIsModalOpen(false);
-      setFormData({ name: '', description: '', permissions: [] });
       fetchRoles();
     } catch (err) {
-      toast.error('Failed to add role');
+      toast.error(`Failed to ${isEditMode ? 'update' : 'add'} role`);
     }
   };
 
-  const handleDeleteRole = async (id) => {
+  const handleDeleteRole = async (id, e) => {
+    e.stopPropagation();
     if (roles.length === 1) return toast.error("Cannot delete the last role");
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -158,63 +181,87 @@ const Roles = () => {
           <p className="text-gray-500 text-sm mt-1">Manage user roles and their descriptions</p>
         </div>
         <button 
-          onClick={() => { setFormData({ name: '', description: '', permissions: [] }); setIsModalOpen(true); }} 
+          onClick={handleOpenCreateModal} 
           className="w-full md:w-auto bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-gray-800 active:scale-95 transition flex items-center justify-center gap-2"
         >
           <FontAwesomeIcon icon={faPlus} /> Add Role
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         {/* Roles List Table (Left Side) */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden col-span-1 lg:col-span-2 flex flex-col">
           <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
                 <tr className="bg-gray-50/80 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  <th className="p-4 pl-6">Role Name</th>
-                  <th className="p-4">Description</th>
-                  <th className="p-4 text-center">Permissions</th>
-                  <th className="p-4 text-center">Actions</th>
+                  <th className="p-4 pl-6 w-[25%]">Role Name</th>
+                  <th className="p-4 w-[40%]">Description</th>
+                  <th className="p-4 text-center w-[15%]">Permissions</th>
+                  <th className="p-4 text-center w-[20%]">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {roles.map(role => {
-                  const isAdmin = role.name.toLowerCase() === 'admin';
-                  return (
-                    <tr 
-                      key={role._id} 
-                      onClick={() => setSelectedRole(role)}
-                      className={`border-b border-gray-50 cursor-pointer transition-colors hover:bg-blue-50/50 ${selectedRole?._id === role._id ? 'bg-blue-50/50' : ''}`}
-                    >
-                      <td className="p-4 pl-6 font-bold text-gray-800 flex items-center gap-2">
-                        {role.name}
-                        {isAdmin && <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">System Role</span>}
-                      </td>
-                      <td className="p-4 text-sm text-gray-600 truncate max-w-[200px]">{role.description || '-'}</td>
-                      <td className="p-4 text-center text-sm font-bold text-blue-600">{isAdmin ? 'All' : (role.permissions?.length || 0)}</td>
-                      <td className="p-4 text-center">
-                        {!isAdmin && (
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); handleDeleteRole(role._id); }}
-                            className="text-gray-400 hover:text-red-600 p-2 transition-colors rounded-lg hover:bg-red-50"
-                          >
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {roles.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-500 font-medium">
+                      No roles found. Click "Add Role" to create one.
+                    </td>
+                  </tr>
+                ) : (
+                  roles.map(role => {
+                    const isAdmin = role.name.toLowerCase() === 'admin';
+                    return (
+                      <tr 
+                        key={role._id} 
+                        onClick={() => setSelectedRole(role)}
+                        className={`border-b border-gray-50 cursor-pointer transition-colors hover:bg-blue-50/50 ${selectedRole?._id === role._id ? 'bg-blue-50/50' : ''}`}
+                      >
+                        <td className="p-4 pl-6 font-bold text-gray-800 align-top">
+                          <div className="flex flex-col items-start gap-1">
+                            <span>{role.name}</span>
+                            {isAdmin && <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest mt-1">System Role</span>}
+                          </div>
+                        </td>
+                        <td className="p-4 text-sm text-gray-600 whitespace-pre-wrap align-top break-words">
+                          {role.description || <span className="text-gray-400 italic">No description</span>}
+                        </td>
+                        <td className="p-4 text-center text-sm font-bold text-blue-600 align-top">
+                          {isAdmin ? 'All' : (role.permissions?.length || 0)}
+                        </td>
+                        <td className="p-4 text-center align-top">
+                          {!isAdmin && (
+                            <div className="flex items-center justify-center gap-2">
+                              <button 
+                                onClick={(e) => handleOpenEditModal(role, e)}
+                                className="text-gray-400 hover:text-blue-600 p-2 transition-colors rounded-lg hover:bg-blue-50"
+                                title="Edit Role"
+                              >
+                                <FontAwesomeIcon icon={faEdit} />
+                              </button>
+                              <button 
+                                onClick={(e) => handleDeleteRole(role._id, e)}
+                                className="text-gray-400 hover:text-red-600 p-2 transition-colors rounded-lg hover:bg-red-50"
+                                title="Delete Role"
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Permissions Manager (Right Side) */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col col-span-1">
-          <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+        {/* Permissions Manager (Right Side - Sticky) */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col col-span-1 lg:sticky lg:top-6 h-[calc(100vh-3rem)] max-h-[850px]">
+          <div className="p-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
             <h3 className="text-lg font-bold text-gray-900">Permissions Manager</h3>
             <p className="text-sm text-gray-500 mt-1">Select a role to manage its permissions</p>
             
@@ -224,16 +271,21 @@ const Roles = () => {
                 className="w-full bg-white border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-bold shadow-sm cursor-pointer appearance-none"
                 value={selectedRole?._id || ''}
                 onChange={(e) => setSelectedRole(roles.find(r => r._id === e.target.value))}
+                disabled={roles.length === 0}
               >
-                {roles.map(r => (
-                  <option key={r._id} value={r._id}>{r.name}</option>
-                ))}
+                {roles.length === 0 ? (
+                  <option value="">No roles available</option>
+                ) : (
+                  roles.map(r => (
+                    <option key={r._id} value={r._id}>{r.name}</option>
+                  ))
+                )}
               </select>
             </div>
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto space-y-6">
-            <h4 className="font-bold text-gray-800 border-b border-gray-100 pb-2">Manage Permissions</h4>
+          <div className="p-6 flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
+            <h4 className="font-bold text-gray-800 border-b border-gray-100 pb-2 sticky top-0 bg-white z-10">Manage Permissions</h4>
             
             {selectedRole ? (
               selectedRole.name.toLowerCase() === 'admin' ? (
@@ -269,7 +321,7 @@ const Roles = () => {
                               />
                               <div>
                                 <p className={`text-sm font-bold ${isGranted ? 'text-gray-900' : 'text-gray-700'}`}>{perm.label}</p>
-                                <p className="text-xs text-gray-500 mt-0.5">{perm.desc}</p>
+                                <p className="text-xs text-gray-500 mt-0.5 leading-snug">{perm.desc}</p>
                               </div>
                             </label>
                           );
@@ -279,15 +331,20 @@ const Roles = () => {
                   ))}
                 </div>
               )
-            ) : null}
+            ) : (
+              <div className="text-center text-gray-400 py-10">
+                <FontAwesomeIcon icon={faShieldAlt} className="text-4xl mb-3 opacity-20" />
+                <p>Select a role to view permissions</p>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
-          <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-3">
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-3 shrink-0">
             <button 
               onClick={handleResetPermissions}
               disabled={!selectedRole || selectedRole.name.toLowerCase() === 'admin'}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-100 hover:text-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-100 hover:text-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed bg-white"
             >
               <FontAwesomeIcon icon={faSyncAlt} className="text-xs" /> Reset
             </button>
@@ -302,17 +359,19 @@ const Roles = () => {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Role">
-        <form onSubmit={handleAddRole} className="space-y-4">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={isEditMode ? "Edit Role" : "Create New Role"}>
+        <form onSubmit={handleSaveRole} className="space-y-4">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-1">Role Name *</label>
             <input required type="text" placeholder="e.g. Front Desk" className="w-full border-gray-300 border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
-            <input type="text" placeholder="e.g. Manage front desk operations" className="w-full border-gray-300 border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+            <textarea rows="3" placeholder="e.g. Manage front desk operations" className="w-full border-gray-300 border p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
           </div>
-          <button type="submit" className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">Create Role</button>
+          <button type="submit" className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
+            {isEditMode ? "Update Role" : "Create Role"}
+          </button>
         </form>
       </Modal>
     </div>
