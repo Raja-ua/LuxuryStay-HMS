@@ -4,51 +4,56 @@ import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faShieldAlt, faCheck, faSave, faPlus, faTrash, 
-  faHotel, faClipboardList, faUser, faBed, faCog, faSyncAlt 
+  faHotel, faClipboardList, faUser, faBed, faCog, faSyncAlt,
+  faMoneyBillWave, faBroom, faUserTie 
 } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../components/Modal';
 import Swal from 'sweetalert2';
 
-// Grouped permissions to match the elegant design
+// Simplified permissions mapping directly to Pages
 const PERMISSION_GROUPS = [
   {
     group: 'Dashboard',
     icon: faHotel,
-    permissions: [
-      { id: 'view_dashboard', label: 'View Dashboard', desc: 'Can access and view dashboard analytics' }
-    ]
+    permissions: [{ id: 'view_dashboard', label: 'View Dashboard', desc: 'Can access the main dashboard and analytics page' }]
   },
   {
-    group: 'Bookings',
-    icon: faClipboardList,
-    permissions: [
-      { id: 'manage_reservations', label: 'Manage Bookings', desc: 'Can create, edit, and cancel bookings' },
-      { id: 'manage_billing', label: 'Manage Billing', desc: 'Can handle payments, invoices, and refunds' }
-    ]
-  },
-  {
-    group: 'Guests',
-    icon: faUser,
-    permissions: [
-      { id: 'manage_guests', label: 'Manage Guests', desc: 'Can view, add, and edit guest profiles' }
-    ]
-  },
-  {
-    group: 'Rooms & Services',
+    group: 'Rooms',
     icon: faBed,
+    permissions: [{ id: 'manage_rooms', label: 'Manage Rooms', desc: 'Can view, add, and edit room inventory and pricing' }]
+  },
+  {
+    group: 'Reservations',
+    icon: faClipboardList,
+    permissions: [{ id: 'manage_reservations', label: 'Manage Reservations', desc: 'Can handle guest bookings, check-ins, and check-outs' }]
+  },
+  {
+    group: 'Billings',
+    icon: faMoneyBillWave,
+    permissions: [{ id: 'manage_billing', label: 'Manage Billings', desc: 'Can view invoices, payments, and financial records' }]
+  },
+  {
+    group: 'Maintenance',
+    icon: faBroom,
+    permissions: [{ id: 'manage_maintenance', label: 'Maintenance & Services', desc: 'Access to Maintenance tasks and Guest Services pages' }]
+  },
+  {
+    group: 'Guests Data',
+    icon: faUser,
+    permissions: [{ id: 'manage_guests', label: 'Guests, Messages & Feedback', desc: 'Access to registered Users, Guest Messages, and Feedbacks' }]
+  },
+  {
+    group: 'Staff & Roles',
+    icon: faUserTie,
     permissions: [
-      { id: 'manage_rooms', label: 'Manage Rooms', desc: 'Can edit room inventory, statuses, and rates' },
-      { id: 'manage_maintenance', label: 'Manage Maintenance', desc: 'Can handle housekeeping and service requests' }
+      { id: 'manage_staff', label: 'Staff Management', desc: 'Can add, edit, and remove hotel staff accounts' },
+      { id: 'manage_roles', label: 'Roles & Permissions', desc: 'Can create roles and assign system permissions' }
     ]
   },
   {
-    group: 'System Configuration',
+    group: 'Settings',
     icon: faCog,
-    permissions: [
-      { id: 'manage_staff', label: 'Manage Staff', desc: 'Can create, edit, and deactivate staff accounts' },
-      { id: 'manage_roles', label: 'Manage Roles', desc: 'Can modify access roles and permissions' },
-      { id: 'manage_settings', label: 'Manage Settings', desc: 'Can configure system-wide settings and policies' }
-    ]
+    permissions: [{ id: 'manage_settings', label: 'System Settings', desc: 'Can configure hotel holidays, pricing surges, and core settings' }]
   }
 ];
 
