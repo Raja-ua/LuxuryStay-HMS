@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHotel, faBed, faClipboardList, faMoneyBillWave, faUser, faCog, faSignOutAlt, faBars, faGlobe, faUserTie, faEnvelope, faCommentDots, faBroom, faConciergeBell, faIdBadge, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faHotel, faBed, faClipboardList, faMoneyBillWave, faUser, faCog, 
+  faSignOutAlt, faBars, faGlobe, faUserTie, faEnvelope, faCommentDots, 
+  faBroom, faConciergeBell, faIdBadge, faShieldAlt, faChevronDown 
+} from '@fortawesome/free-solid-svg-icons';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import Logo from '../components/Logo';
@@ -13,6 +17,7 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [permissions, setPermissions] = useState([]);
   const [loadingRoles, setLoadingRoles] = useState(true);
+  const [openMenus, setOpenMenus] = useState({});
 
   useEffect(() => {
     const loggedUser = localStorage.getItem('user');
@@ -74,6 +79,10 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
+  const toggleMenu = (name) => {
+    setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
+  };
+
   if (!user || user.role === 'guest' || loadingRoles) return <div className="h-screen flex items-center justify-center bg-gray-50"><FontAwesomeIcon icon={faCog} className="animate-spin text-4xl text-blue-500" /></div>;
 
   const hasPerm = (perm) => permissions.includes(perm);
@@ -88,10 +97,91 @@ const AdminLayout = () => {
     hasPerm('manage_guests') && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
     hasPerm('manage_guests') && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
     hasPerm('manage_guests') && { name: 'Users', path: '/admin/users', icon: faUser },
-    hasPerm('manage_staff') && { name: 'Staff Management', path: '/admin/staff', icon: faUserTie },
-    hasPerm('manage_roles') && { name: 'Roles', path: '/admin/roles', icon: faIdBadge },
+    (hasPerm('manage_staff') || hasPerm('manage_roles')) && { 
+      name: 'Staff', 
+      icon: faUserTie, 
+      subLinks: [
+        hasPerm('manage_staff') && { name: 'Staff List', path: '/admin/staff' },
+        hasPerm('manage_roles') && { name: 'Roles & Permissions', path: '/admin/roles' }
+      ].filter(Boolean)
+    },
     hasPerm('manage_settings') && { name: 'Settings', path: '/admin/settings', icon: faCog },
   ].filter(Boolean);
+
+  const renderNavLinks = (isMobile = false) => {
+    return adminLinks.map((link) => {
+      if (link.subLinks) {
+        const isActiveParent = link.subLinks.some(sub => location.pathname === sub.path || location.pathname.startsWith(sub.path + '/'));
+        const isOpen = openMenus[link.name] || isActiveParent;
+        
+        return (
+          <div key={link.name} className="flex flex-col">
+            <button 
+              onClick={() => toggleMenu(link.name)}
+              className={`flex items-center justify-between w-full p-4 rounded-xl transition-all duration-300 ${
+                isActiveParent 
+                  ? 'bg-yellow-600/20 text-yellow-500 font-bold' 
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white font-medium hover:translate-x-1'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`flex items-center justify-center w-6 ${isActiveParent ? 'text-yellow-500' : 'text-gray-500'}`}>
+                  <FontAwesomeIcon icon={link.icon} className={isMobile ? "text-xl" : "text-lg"} />
+                </div>
+                {link.name}
+              </div>
+              <FontAwesomeIcon 
+                icon={faChevronDown} 
+                className={`text-xs transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+              />
+            </button>
+            
+            {isOpen && (
+              <div className="mt-1 ml-4 pl-4 border-l border-gray-800 space-y-1 animate-fade-in-up">
+                {link.subLinks.map(sub => {
+                  const isSubActive = location.pathname === sub.path || location.pathname.startsWith(sub.path + '/');
+                  return (
+                    <Link 
+                      key={sub.path} 
+                      to={sub.path} 
+                      onClick={() => isMobile && setSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
+                        isSubActive 
+                          ? 'text-white bg-gray-800 font-bold shadow-sm' 
+                          : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSubActive ? 'bg-yellow-500' : 'bg-gray-600'}`}></span>
+                      {sub.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      const isActive = location.pathname === link.path || location.pathname.startsWith(link.path + '/');
+      return (
+        <Link 
+          key={link.path} 
+          to={link.path} 
+          onClick={() => isMobile && setSidebarOpen(false)}
+          className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
+            isActive 
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold' 
+              : 'text-gray-400 hover:bg-gray-800 hover:text-white font-medium hover:translate-x-1'
+          }`}
+        >
+          <div className={`flex items-center justify-center w-6 ${isActive ? 'text-white' : 'text-gray-500'}`}>
+            <FontAwesomeIcon icon={link.icon} className={isMobile ? "text-xl" : "text-lg"} />
+          </div>
+          {link.name}
+        </Link>
+      )
+    });
+  };
 
   return (
     <div className="admin-panel min-h-screen bg-gray-50 flex">
@@ -117,26 +207,9 @@ const AdminLayout = () => {
 
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
           <p className="px-4 text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Main Menu</p>
-          {adminLinks.map((link) => {
-            const isActive = location.pathname === link.path || location.pathname.startsWith(link.path + '/');
-            return (
-              <Link 
-                key={link.path} 
-                to={link.path} 
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 ${
-                  isActive 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold' 
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white font-medium hover:translate-x-1'
-                }`}
-              >
-                <div className={`flex items-center justify-center w-6 ${isActive ? 'text-white' : 'text-gray-500'}`}>
-                  <FontAwesomeIcon icon={link.icon} className="text-lg" />
-                </div>
-                {link.name}
-              </Link>
-            )
-          })}
+          {renderNavLinks(false)}
         </nav>
+        
         <div className="p-4 border-t border-gray-800 space-y-3 bg-gray-900/50">
           {hasPerm('view_dashboard') && (
             <Link to="/" className="w-full flex items-center justify-center gap-2 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white py-3.5 rounded-xl transition-all font-semibold hover:shadow-lg">
@@ -182,13 +255,11 @@ const AdminLayout = () => {
               </div>
               <button onClick={() => setSidebarOpen(false)} className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl">&times;</button>
             </div>
+            
             <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-2">
-              {adminLinks.map((link) => (
-                <Link key={link.path} to={link.path} onClick={() => setSidebarOpen(false)} className={`flex items-center gap-4 p-4 rounded-xl ${location.pathname === link.path ? 'bg-blue-600 text-white font-bold' : 'text-gray-400 hover:bg-gray-800'}`}>
-                  <FontAwesomeIcon icon={link.icon} className="w-6 text-xl" /> {link.name}
-                </Link>
-              ))}
+              {renderNavLinks(true)}
             </nav>
+            
             <div className="p-6 border-t border-gray-800 space-y-3">
               {hasPerm('view_dashboard') && (
                 <Link to="/" className="w-full flex justify-center py-4 bg-gray-800 rounded-xl font-bold"><FontAwesomeIcon icon={faGlobe} className="mr-2" /> View Website</Link>
