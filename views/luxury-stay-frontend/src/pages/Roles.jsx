@@ -188,14 +188,14 @@ const Roles = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Roles List Table (Left Side) */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden col-span-1 lg:col-span-2 flex flex-col">
-          <div className="overflow-x-auto flex-1">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden col-span-1 lg:col-span-2 flex flex-col h-[calc(100vh-12rem)] min-h-[500px]">
+          <div className="overflow-auto flex-1 scrollbar-thin scrollbar-thumb-gray-200">
             <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="bg-gray-50/80 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <thead className="sticky top-0 bg-white z-10 shadow-sm">
+                <tr className="bg-gray-50/90 backdrop-blur-sm border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   <th className="p-4 pl-6 w-[25%]">Role Name</th>
                   <th className="p-4 w-[40%]">Description</th>
                   <th className="p-4 text-center w-[15%]">Permissions</th>
@@ -259,8 +259,8 @@ const Roles = () => {
           </div>
         </div>
 
-        {/* Permissions Manager (Right Side - Sticky) */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col col-span-1 lg:sticky lg:top-6 h-[calc(100vh-3rem)] max-h-[850px]">
+        {/* Permissions Manager (Right Side) */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col col-span-1 h-[calc(100vh-12rem)] min-h-[500px]">
           <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white shrink-0 flex items-center justify-between">
             {selectedRole ? (
               <>
@@ -271,7 +271,7 @@ const Roles = () => {
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">{selectedRole.name}</h3>
                 </div>
-                <div className="w-12 h-12 bg-blue-50/50 rounded-xl flex items-center justify-center border border-blue-100 shadow-inner">
+                <div className="w-12 h-12 bg-blue-50/50 rounded-xl flex items-center justify-center border border-blue-100 shadow-inner shrink-0">
                   <FontAwesomeIcon icon={faShieldAlt} className="text-blue-600 text-xl" />
                 </div>
               </>
@@ -283,12 +283,14 @@ const Roles = () => {
             )}
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
-            <h4 className="font-bold text-gray-800 border-b border-gray-100 pb-2 sticky top-0 bg-white z-10">Manage Permissions</h4>
-            
+          <div className="px-6 py-4 bg-white border-b border-gray-50/50 shrink-0 shadow-[0_2px_4px_rgba(0,0,0,0.02)] z-10">
+            <h4 className="font-bold text-gray-800">Manage Permissions</h4>
+          </div>
+
+          <div className="p-6 pt-5 flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
             {selectedRole ? (
               selectedRole.name.toLowerCase() === 'admin' ? (
-                <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center">
+                <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center mt-4">
                   <FontAwesomeIcon icon={faShieldAlt} className="text-3xl text-blue-500 mb-3" />
                   <p className="font-bold text-blue-900">Full System Access</p>
                   <p className="text-sm text-blue-700 mt-1">The Admin role has unrestricted access to all features and settings. It cannot be modified.</p>
