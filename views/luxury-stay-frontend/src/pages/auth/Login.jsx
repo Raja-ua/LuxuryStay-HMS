@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -8,32 +8,11 @@ import Logo from '../../components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();
-  const userStr = localStorage.getItem('user');
-
-  useEffect(() => {
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.isStaff || user.role !== 'guest') {
-          const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(user.role);
-          window.location.replace(isMaint ? '/admin/maintenance' : '/admin');
-        } else {
-          window.location.replace('/');
-        }
-      } catch (e) {
-        localStorage.removeItem('user');
-      }
-    }
-  }, [userStr]);
-
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [loginType, setLoginType] = useState('user'); // 'user' or 'staff'
-
-  // If user is already logged in, do not render the login page at all while redirecting
-  if (userStr) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,12 +37,12 @@ const Login = () => {
         if (loginType === 'staff' || loggedInUser.role !== 'guest') {
           const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(loggedInUser.role);
           if (isMaint) {
-            window.location.replace('/admin/maintenance');
+            window.location.href = '/admin/maintenance';
           } else {
-            window.location.replace('/admin'); 
+            window.location.href = '/admin'; 
           }
         } else {
-          window.location.replace('/'); 
+          window.location.href = '/'; 
         }
       } else {
         toast.error('Invalid email or password');

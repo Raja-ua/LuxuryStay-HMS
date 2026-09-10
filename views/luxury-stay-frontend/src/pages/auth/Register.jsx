@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -8,24 +8,6 @@ import Logo from '../../components/Logo';
 
 const Register = () => {
   const navigate = useNavigate();
-  const userStr = localStorage.getItem('user');
-
-  useEffect(() => {
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.isStaff || user.role !== 'guest') {
-          const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(user.role);
-          window.location.replace(isMaint ? '/admin/maintenance' : '/admin');
-        } else {
-          window.location.replace('/');
-        }
-      } catch (e) {
-        localStorage.removeItem('user');
-      }
-    }
-  }, [userStr]);
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,9 +22,6 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // If user is already logged in, do not render the register page at all while redirecting
-  if (userStr) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
