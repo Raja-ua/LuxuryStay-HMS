@@ -16,15 +16,15 @@ const Login = () => {
         const user = JSON.parse(userStr);
         if (user.isStaff || user.role !== 'guest') {
           const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(user.role);
-          navigate(isMaint ? '/admin/maintenance' : '/admin', { replace: true });
+          window.location.replace(isMaint ? '/admin/maintenance' : '/admin');
         } else {
-          navigate('/', { replace: true });
+          window.location.replace('/');
         }
       } catch (e) {
         localStorage.removeItem('user');
       }
     }
-  }, [navigate, userStr]);
+  }, [userStr]);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -58,12 +58,12 @@ const Login = () => {
         if (loginType === 'staff' || loggedInUser.role !== 'guest') {
           const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(loggedInUser.role);
           if (isMaint) {
-            window.location.href = '/admin/maintenance';
+            window.location.replace('/admin/maintenance');
           } else {
-            window.location.href = '/admin'; 
+            window.location.replace('/admin'); 
           }
         } else {
-          window.location.href = '/'; 
+          window.location.replace('/'); 
         }
       } else {
         toast.error('Invalid email or password');
