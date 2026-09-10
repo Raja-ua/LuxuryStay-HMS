@@ -78,18 +78,18 @@ const Home = () => {
 
   return (
     <div className="space-y-8">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
         <div>
-          <h1 className="text-3xl font-bold mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
             Welcome back, {user.fullName || user.name}!
           </h1>
-          <p className="text-gray-300">
+          <p className="text-gray-300 text-sm md:text-base">
             {isAdmin 
               ? "Here's what's happening at your hotel today."
               : "Experience luxury and comfort. Book your stay, manage your reservations, and explore our world-class amenities."}
           </p>
         </div>
-        <div>
+        <div className="self-end md:self-auto">
           <NotificationsDropdown userRole={user.role?.toLowerCase() || ''} darkTheme={true} />
         </div>
       </div>
