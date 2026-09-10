@@ -65,6 +65,11 @@ exports.updateRoom = async (req, res) => {
         const updatedData = { ...req.body };
         updatedData.images = imageUrls;
         
+        // Auto-dirty if transitioning from occupied to available
+        if (req.body.status === 'available' && room.status === 'occupied') {
+            updatedData.cleaningStatus = 'Dirty';
+        }
+
         if (req.body.features) updatedData.features = req.body.features.split(',');
         if (req.body.beds) {
             try { updatedData.beds = JSON.parse(req.body.beds); } catch(e) {}

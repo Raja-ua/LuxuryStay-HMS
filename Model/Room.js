@@ -19,7 +19,7 @@ const roomSchema = new mongoose.Schema({
     },
     cleaningStatus: {
         type: String,
-        enum: ['Clean', 'Dirty', 'Cleaning', 'Inspected'],
+        enum: ['Clean', 'Dirty', 'Cleaning'],
         default: 'Clean'
     },
     pricePerNight: { type: Number }, // Kept for billing purposes

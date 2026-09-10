@@ -46,7 +46,6 @@ const Housekeeping = () => {
       case 'Clean': return 'bg-green-100 text-green-700 border-green-200';
       case 'Dirty': return 'bg-red-100 text-red-700 border-red-200';
       case 'Cleaning': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'Inspected': return 'bg-blue-100 text-blue-700 border-blue-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
@@ -56,7 +55,6 @@ const Housekeeping = () => {
       case 'Clean': return faCheckCircle;
       case 'Dirty': return faTimesCircle;
       case 'Cleaning': return faSpinner;
-      case 'Inspected': return faCheckCircle;
       default: return faBroom;
     }
   };
@@ -102,19 +100,17 @@ const Housekeeping = () => {
               <option value="Clean">Clean</option>
               <option value="Dirty">Dirty</option>
               <option value="Cleaning">Cleaning in Progress</option>
-              <option value="Inspected">Inspected & Ready</option>
             </select>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[
           { label: 'Dirty Rooms', count: rooms.filter(r => (r.cleaningStatus || 'Clean') === 'Dirty').length, color: 'text-red-600', bg: 'bg-red-50' },
           { label: 'Cleaning', count: rooms.filter(r => (r.cleaningStatus || 'Clean') === 'Cleaning').length, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-          { label: 'Clean', count: rooms.filter(r => (r.cleaningStatus || 'Clean') === 'Clean').length, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Inspected', count: rooms.filter(r => (r.cleaningStatus || 'Clean') === 'Inspected').length, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Clean', count: rooms.filter(r => (r.cleaningStatus || 'Clean') === 'Clean').length, color: 'text-green-600', bg: 'bg-green-50' }
         ].map((stat, i) => (
           <div key={i} className={`${stat.bg} p-4 rounded-2xl border border-gray-100 flex flex-col justify-center items-center`}>
             <span className={`text-2xl font-bold ${stat.color}`}>{stat.count}</span>
@@ -150,8 +146,8 @@ const Housekeeping = () => {
 
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Update Status</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['Clean', 'Dirty', 'Cleaning', 'Inspected'].map(s => (
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Clean', 'Dirty', 'Cleaning'].map(s => (
                       <button
                         key={s}
                         onClick={() => handleStatusChange(room._id, s)}

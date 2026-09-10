@@ -122,7 +122,9 @@ exports.updateReservation = async (req, res) => {
 
         if (['pending', 'confirmed', 'checked-in'].includes(reservation.status)) {
             await Room.findByIdAndUpdate(reservation.roomId, { status: 'occupied' });
-        } else if (['checked-out', 'early-checkout', 'cancelled'].includes(reservation.status)) {
+        } else if (['checked-out', 'early-checkout'].includes(reservation.status)) {
+            await Room.findByIdAndUpdate(reservation.roomId, { status: 'available', cleaningStatus: 'Dirty' });
+        } else if (reservation.status === 'cancelled') {
             await Room.findByIdAndUpdate(reservation.roomId, { status: 'available' });
         }
 
