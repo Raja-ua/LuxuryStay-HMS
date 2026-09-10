@@ -14,8 +14,13 @@ const roomSchema = new mongoose.Schema({
     beds: [bedSchema],
     status: { 
         type: String, 
-        enum: ['available', 'occupied', 'cleaning', 'maintenance'], 
+        enum: ['available', 'occupied', 'maintenance'], 
         default: 'available' 
+    },
+    cleaningStatus: {
+        type: String,
+        enum: ['Clean', 'Dirty', 'Cleaning', 'Inspected'],
+        default: 'Clean'
     },
     pricePerNight: { type: Number }, // Kept for billing purposes
     features: [String],

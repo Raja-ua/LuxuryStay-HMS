@@ -28,6 +28,7 @@ import Billings from './pages/Billings';
 import Feedbacks from './pages/Feedbacks';
 import Messages from './pages/Messages';
 import MaintenanceTasks from './pages/MaintenanceTasks';
+import Housekeeping from './pages/Housekeeping';
 import ServiceRequests from './pages/ServiceRequests';
 import Settings from './pages/Settings';
 
@@ -84,6 +85,7 @@ function App() {
           <Route path="reservations" element={<Reservations />} />
           <Route path="billings" element={<Billings />} />
           <Route path="maintenance" element={<MaintenanceTasks />} />
+          <Route path="housekeeping" element={<Housekeeping />} />
           <Route path="services" element={<ServiceRequests />} />
           <Route path="feedbacks" element={<Feedbacks />} />
           <Route path="messages" element={<Messages />} />

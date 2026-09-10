@@ -92,8 +92,15 @@ const AdminLayout = () => {
     hasPerm('manage_rooms') && { name: 'Rooms', path: '/admin/rooms', icon: faBed },
     hasPerm('manage_reservations') && { name: 'Reservations', path: '/admin/reservations', icon: faClipboardList },
     hasPerm('manage_billing') && { name: 'Billings', path: '/admin/billings', icon: faMoneyBillWave },
-    hasPerm('manage_maintenance') && { name: 'Maintenance', path: '/admin/maintenance', icon: faBroom },
-    hasPerm('manage_maintenance') && { name: 'Guest Services', path: '/admin/services', icon: faConciergeBell },
+    hasPerm('manage_maintenance') && { 
+      name: 'Operations', 
+      icon: faBroom, 
+      subLinks: [
+        { name: 'Housekeeping', path: '/admin/housekeeping' },
+        { name: 'Maintenance', path: '/admin/maintenance' },
+        { name: 'Guest Services', path: '/admin/services' }
+      ]
+    },
     hasPerm('manage_guests') && { name: 'Messages', path: '/admin/messages', icon: faEnvelope },
     hasPerm('manage_guests') && { name: 'Feedbacks', path: '/admin/feedbacks', icon: faCommentDots },
     hasPerm('manage_guests') && { name: 'Users', path: '/admin/users', icon: faUser },
