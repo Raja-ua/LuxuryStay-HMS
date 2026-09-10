@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -8,6 +8,24 @@ import Logo from '../../components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.isStaff || user.role !== 'guest') {
+          const isMaint = ['housekeeping', 'maintenance', 'cleaner', 'sweeper'].includes(user.role);
+          navigate(isMaint ? '/admin/maintenance' : '/admin', { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
+      } catch (e) {
+        // invalid JSON in localstorage
+      }
+    }
+  }, [navigate]);
+
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
