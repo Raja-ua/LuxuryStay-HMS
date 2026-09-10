@@ -261,27 +261,26 @@ const Roles = () => {
 
         {/* Permissions Manager (Right Side - Sticky) */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col col-span-1 lg:sticky lg:top-6 h-[calc(100vh-3rem)] max-h-[850px]">
-          <div className="p-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
-            <h3 className="text-lg font-bold text-gray-900">Permissions Manager</h3>
-            <p className="text-sm text-gray-500 mt-1">Select a role to manage its permissions</p>
-            
-            <div className="mt-4">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Role</label>
-              <select 
-                className="w-full bg-white border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-bold shadow-sm cursor-pointer appearance-none"
-                value={selectedRole?._id || ''}
-                onChange={(e) => setSelectedRole(roles.find(r => r._id === e.target.value))}
-                disabled={roles.length === 0}
-              >
-                {roles.length === 0 ? (
-                  <option value="">No roles available</option>
-                ) : (
-                  roles.map(r => (
-                    <option key={r._id} value={r._id}>{r.name}</option>
-                  ))
-                )}
-              </select>
-            </div>
+          <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white shrink-0 flex items-center justify-between">
+            {selectedRole ? (
+              <>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Editing Role</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedRole.name}</h3>
+                </div>
+                <div className="w-12 h-12 bg-blue-50/50 rounded-xl flex items-center justify-center border border-blue-100 shadow-inner">
+                  <FontAwesomeIcon icon={faShieldAlt} className="text-blue-600 text-xl" />
+                </div>
+              </>
+            ) : (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Permissions Manager</h3>
+                <p className="text-sm text-gray-500 mt-1">Select a role from the table</p>
+              </div>
+            )}
           </div>
 
           <div className="p-6 flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
