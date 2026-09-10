@@ -8,9 +8,9 @@ import Logo from '../../components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();
+  const userStr = localStorage.getItem('user');
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -21,16 +21,19 @@ const Login = () => {
           navigate('/', { replace: true });
         }
       } catch (e) {
-        // invalid JSON in localstorage
+        localStorage.removeItem('user');
       }
     }
-  }, [navigate]);
+  }, [navigate, userStr]);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [loginType, setLoginType] = useState('user'); // 'user' or 'staff'
+
+  // If user is already logged in, do not render the login page at all while redirecting
+  if (userStr) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

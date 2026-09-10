@@ -8,9 +8,9 @@ import Logo from '../../components/Logo';
 
 const Register = () => {
   const navigate = useNavigate();
+  const userStr = localStorage.getItem('user');
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -21,10 +21,10 @@ const Register = () => {
           navigate('/', { replace: true });
         }
       } catch (e) {
-        // invalid JSON in localstorage
+        localStorage.removeItem('user');
       }
     }
-  }, [navigate]);
+  }, [navigate, userStr]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -40,6 +40,9 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // If user is already logged in, do not render the register page at all while redirecting
+  if (userStr) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
