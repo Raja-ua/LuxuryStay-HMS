@@ -107,14 +107,14 @@ const Roles = () => {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Roles & Permissions</h1>
           <p className="text-gray-500 text-sm mt-1">Manage staff access levels and system permissions</p>
         </div>
         <button 
           onClick={() => { setFormData({ name: '', description: '', permissions: [] }); setIsModalOpen(true); }} 
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition flex items-center gap-2"
+          className="w-full md:w-auto bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition flex items-center justify-center gap-2"
         >
           <FontAwesomeIcon icon={faPlus} /> Create Role
         </button>
@@ -154,17 +154,17 @@ const Roles = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 col-span-1 lg:col-span-3">
           {selectedRole ? (
             <div>
-              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
                 <div>
                   <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                     <FontAwesomeIcon icon={faShieldAlt} className="text-blue-500" /> 
-                    Editing Permissions: <span className="text-blue-600">{selectedRole.name}</span>
+                    Editing Permissions: <span className="text-blue-600 break-all">{selectedRole.name}</span>
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">{selectedRole.description || 'No description provided.'}</p>
                 </div>
                 <button 
                   onClick={handleSavePermission}
-                  className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-green-700 active:scale-95 transition flex items-center gap-2 shadow-lg hover:shadow-green-500/30"
+                  className="w-full md:w-auto bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-green-700 active:scale-95 transition flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/30"
                 >
                   <FontAwesomeIcon icon={faSave} /> Save Changes
                 </button>
