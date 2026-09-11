@@ -83,7 +83,18 @@ const AdminLayout = () => {
     setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
-  if (!user || user.role === 'guest' || loadingRoles) return <div className="h-screen flex items-center justify-center bg-gray-50"><FontAwesomeIcon icon={faCog} className="animate-spin text-4xl text-blue-500" /></div>;
+  if (!user || user.role === 'guest' || loadingRoles) {
+    return (
+      <div className="fixed inset-0 z-[99999] bg-white flex flex-col items-center justify-center">
+        <div>
+          <Logo size="lg" isDark={true} />
+          <div className="mt-8 flex justify-center">
+            <div className="w-8 h-8 border-2 border-gray-100 border-t-[#937648] rounded-full animate-spin"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const hasPerm = (perm) => permissions.includes(perm);
 
