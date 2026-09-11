@@ -62,12 +62,15 @@ const Profile = () => {
       });
       toast.success('Profile updated successfully!');
       
-      const updatedUser = { ...user, ...formData, image: data.image || user.image };
+      const updatedUser = data.user; // Backend returns { message, user }
       localStorage.setItem('user', JSON.stringify(updatedUser));
       
       setUser(updatedUser);
       setIsEditing(false);
       setImageFile(null);
+      
+      // Dispatch event to update navbar/header immediately without a harsh reload, or keep reload
+      window.dispatchEvent(new Event('userUpdated'));
       window.location.reload();
     } catch (err) {
       toast.error('Failed to update profile');

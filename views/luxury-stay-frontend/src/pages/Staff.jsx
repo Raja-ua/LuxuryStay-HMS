@@ -119,10 +119,21 @@ const Staff = () => {
 
     try {
       if (editingStaff) {
-        await api.put(`/staff/${editingStaff._id}`, data, {
+        const response = await api.put(`/staff/${editingStaff._id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Staff updated');
+        
+        // If the edited staff is the currently logged in user, update localStorage
+        const loggedUser = JSON.parse(localStorage.getItem('user'));
+        if (loggedUser && loggedUser._id === editingStaff._id) {
+          // Backend should return the updated staff object, but if it doesn't we can refresh
+          if (response.data && response.data.staff) {
+            localStorage.setItem('user', JSON.stringify({ ...loggedUser, ...response.data.staff }));
+          }
+          window.dispatchEvent(new Event('userUpdated'));
+          window.location.reload();
+        }
       } else {
         await api.post('/staff', data, {
           headers: { 'Content-Type': 'multipart/form-data' }
