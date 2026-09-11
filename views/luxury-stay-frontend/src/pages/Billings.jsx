@@ -182,8 +182,8 @@ const Billings = () => {
                       return remaining < 0 
                         ? <span className="text-purple-600 font-bold whitespace-nowrap">Refund: ${Math.abs(remaining).toFixed(2)}</span>
                         : remaining === 0 
-                          ? <span className="bg-green-100 text-green-700 py-1 px-3 rounded-full text-xs font-bold border border-green-200">Cleared</span>
-                          : <span className="bg-red-100 text-red-700 py-1 px-3 rounded-full text-xs font-bold border border-red-200">Due: ${Number(remaining).toFixed(2)}</span>;
+                          ? <span className="bg-green-100 text-green-700 py-1 px-3 rounded-full text-xs font-bold border border-green-200 whitespace-nowrap">Cleared</span>
+                          : <span className="bg-red-100 text-red-700 py-1 px-3 rounded-full text-xs font-bold border border-red-200 whitespace-nowrap">Due: ${Number(remaining).toFixed(2)}</span>;
                     })()}
                   </td>
                   <td className="p-5">
