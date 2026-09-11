@@ -25,18 +25,18 @@ const WebsiteLayout = () => {
         const { data } = await api.get('/reservations');
         const clearedNotifs = JSON.parse(localStorage.getItem('clearedNotifs') || '[]');
         
-        // Get all confirmed bookings for this user
-        const userConfirmed = data.filter(r => {
+        // Get all confirmed or cancelled bookings for this user
+        const userRelevant = data.filter(r => {
           const guestIdStr = r.guestId?._id || r.guestId;
-          return guestIdStr === userData._id && r.status === 'confirmed';
+          return guestIdStr === userData._id && (r.status === 'confirmed' || r.status === 'cancelled');
         });
         
         // Sort newest first
-        userConfirmed.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+        userRelevant.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
 
-        const unread = userConfirmed.filter(r => !clearedNotifs.includes(r._id)).map(r => r._id);
+        const unread = userRelevant.filter(r => !clearedNotifs.includes(r._id)).map(r => r._id);
         
-        setNotifications(userConfirmed);
+        setNotifications(userRelevant);
         setUnreadIds(unread);
       } catch (error) {
         console.error("Error fetching notifications", error);
@@ -131,6 +131,7 @@ const WebsiteLayout = () => {
                         const clearedNotifs = JSON.parse(localStorage.getItem('clearedNotifs') || '[]');
                         const newCleared = Array.from(new Set([...clearedNotifs, ...unreadIds]));
                         localStorage.setItem('clearedNotifs', JSON.stringify(newCleared));
+                        setUnreadIds([]);
                       }
                     }}
                     className="hidden md:block text-gray-500 hover:text-blue-600 transition text-xl relative outline-none mt-1"
@@ -163,8 +164,14 @@ const WebsiteLayout = () => {
                                 <div className="flex items-start gap-3">
                                   <div className={`mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${isNew ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.6)] animate-pulse' : 'bg-gray-300'}`}></div>
                                   <div>
-                                    <p className={`text-sm font-medium ${isNew ? 'text-gray-900' : 'text-gray-600'}`}>Booking Approved!</p>
-                                    <p className={`text-xs mt-1 ${isNew ? 'text-gray-700' : 'text-gray-400'}`}>Your reservation for Room {notif.roomId?.roomNumber || '...'} has been confirmed by the admin.</p>
+                                    <p className={`text-sm font-medium ${isNew ? 'text-gray-900' : 'text-gray-600'}`}>
+                                        {notif.status === 'cancelled' ? 'Booking Cancelled' : 'Booking Approved!'}
+                                    </p>
+                                    <p className={`text-xs mt-1 ${isNew ? 'text-gray-700' : 'text-gray-400'}`}>
+                                        {notif.status === 'cancelled'
+                                            ? `Your reservation for Room ${notif.roomId?.roomNumber || '...'} has been cancelled.`
+                                            : `Your reservation for Room ${notif.roomId?.roomNumber || '...'} has been confirmed by the admin.`}
+                                    </p>
                                   </div>
                                 </div>
                               </Link>
@@ -216,6 +223,7 @@ const WebsiteLayout = () => {
                             const clearedNotifs = JSON.parse(localStorage.getItem('clearedNotifs') || '[]');
                             const newCleared = Array.from(new Set([...clearedNotifs, ...unreadIds]));
                             localStorage.setItem('clearedNotifs', JSON.stringify(newCleared));
+                            setUnreadIds([]);
                           }
                           setIsDropdownOpen(false);
                           setIsNotificationOpen(true);
