@@ -201,16 +201,18 @@ const Billings = () => {
                       <option value="refunded">REFUNDED</option>
                     </select>
                   </td>
-                  <td className="p-5 text-right space-x-2">
-                    <button className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center" title="Print Invoice" onClick={() => handlePrint(b)}>
-                      <FontAwesomeIcon icon={faPrint} />
-                    </button>
-                    <button onClick={() => openEditModal(b)} className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center" title="Edit">
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button onClick={() => handleDelete(b._id)} className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center" title="Delete">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                  <td className="p-5 text-right">
+                    <div className="flex justify-end gap-2 min-w-max">
+                      <button className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center shrink-0" title="Print Invoice" onClick={() => handlePrint(b)}>
+                        <FontAwesomeIcon icon={faPrint} />
+                      </button>
+                      <button onClick={() => openEditModal(b)} className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center shrink-0" title="Edit">
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button onClick={() => handleDelete(b._id)} className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center shrink-0" title="Delete">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
