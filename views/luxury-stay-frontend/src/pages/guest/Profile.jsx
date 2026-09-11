@@ -103,7 +103,7 @@ const Profile = () => {
             )}
             
             {isEditing && (
-              <label className="absolute inset-0 bg-black/60 hidden group-hover:flex flex-col items-center justify-center text-white cursor-pointer transition-all">
+              <label className="absolute inset-0 bg-black/60 flex md:hidden md:group-hover:flex flex-col items-center justify-center text-white cursor-pointer transition-all">
                 <FontAwesomeIcon icon={faCamera} className="text-2xl mb-2" />
                 <span className="text-xs font-bold uppercase tracking-wider">Change Photo</span>
                 <input type="file" className="hidden" accept="image/*" onChange={e => setImageFile(e.target.files[0])} />
