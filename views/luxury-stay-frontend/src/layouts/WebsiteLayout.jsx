@@ -18,6 +18,7 @@ const WebsiteLayout = () => {
   const dropdownRef = useRef(null);
   const notifRef = useRef(null);
   const [unreadIds, setUnreadIds] = useState([]);
+  const [badgeCount, setBadgeCount] = useState(0);
 
   useEffect(() => {
     const fetchNotifications = async (userData) => {
@@ -38,6 +39,7 @@ const WebsiteLayout = () => {
         
         setNotifications(userRelevant);
         setUnreadIds(unread);
+        setBadgeCount(unread.length);
       } catch (error) {
         console.error("Error fetching notifications", error);
       }
@@ -131,15 +133,18 @@ const WebsiteLayout = () => {
                         const clearedNotifs = JSON.parse(localStorage.getItem('clearedNotifs') || '[]');
                         const newCleared = Array.from(new Set([...clearedNotifs, ...unreadIds]));
                         localStorage.setItem('clearedNotifs', JSON.stringify(newCleared));
+                        setBadgeCount(0);
+                      }
+                      if (isNotificationOpen) {
                         setUnreadIds([]);
                       }
                     }}
                     className="hidden md:block text-gray-500 hover:text-blue-600 transition text-xl relative outline-none mt-1"
                   >
                     <FontAwesomeIcon icon={faBell} />
-                    {unreadIds.length > 0 && (
+                    {badgeCount > 0 && (
                       <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border border-white animate-pulse">
-                        {unreadIds.length}
+                        {badgeCount}
                       </span>
                     )}
                   </button>
@@ -149,7 +154,7 @@ const WebsiteLayout = () => {
                       <div className="bg-blue-50 px-4 py-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between items-center">
                         <span>Notifications</span>
                         <div className="flex items-center gap-2">
-                          {unreadIds.length > 0 && <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">{unreadIds.length} New</span>}
+                          {badgeCount > 0 && <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">{badgeCount} New</span>}
                           <button className="md:hidden text-gray-500" onClick={() => setIsNotificationOpen(false)}>
                             <FontAwesomeIcon icon={faTimes} />
                           </button>
@@ -160,7 +165,7 @@ const WebsiteLayout = () => {
                           notifications.map(notif => {
                             const isNew = unreadIds.includes(notif._id);
                             return (
-                              <Link key={notif._id} to="/my-bookings" onClick={() => setIsNotificationOpen(false)} className={`block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition relative ${isNew ? 'bg-green-50/30' : ''}`}>
+                              <Link key={notif._id} to="/my-bookings" onClick={() => { setIsNotificationOpen(false); setUnreadIds([]); }} className={`block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition relative ${isNew ? 'bg-green-50/30' : ''}`}>
                                 <div className="flex items-start gap-3">
                                   <div className={`mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${isNew ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.6)] animate-pulse' : 'bg-gray-300'}`}></div>
                                   <div>
@@ -223,7 +228,7 @@ const WebsiteLayout = () => {
                             const clearedNotifs = JSON.parse(localStorage.getItem('clearedNotifs') || '[]');
                             const newCleared = Array.from(new Set([...clearedNotifs, ...unreadIds]));
                             localStorage.setItem('clearedNotifs', JSON.stringify(newCleared));
-                            setUnreadIds([]);
+                            setBadgeCount(0);
                           }
                           setIsDropdownOpen(false);
                           setIsNotificationOpen(true);
@@ -233,9 +238,9 @@ const WebsiteLayout = () => {
                         <div className="flex items-center gap-3">
                           <FontAwesomeIcon icon={faBell} className="w-4 text-center" /> Notifications
                         </div>
-                        {unreadIds.length > 0 && (
+                        {badgeCount > 0 && (
                           <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                            {unreadIds.length}
+                            {badgeCount}
                           </span>
                         )}
                       </button>
