@@ -1,26 +1,49 @@
 const Reservation = require('../Model/Reservation');
 const Room = require('../Model/Room');
 const Billing = require('../Model/Billing');
+const ServiceRequest = require('../Model/ServiceRequest');
+const User = require('../Model/User');
 
 exports.getDashboardAnalytics = async (req, res) => {
     try {
-        // 1. KPI Stats
-        const totalRooms = await Room.countDocuments();
-        const availableRooms = await Room.countDocuments({ status: 'Available' });
-        const occupiedRooms = await Room.countDocuments({ status: 'Occupied' });
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
         
-        // Calculate total revenue from paid reservations
-        const reservations = await Reservation.find({ paymentStatus: { $in: ['Paid', 'Partially Paid'] } });
-        const totalRevenue = reservations.reduce((sum, res) => sum + (res.paidAmount || 0), 0);
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        // 1. KPI Stats
+        const reservationsWithPayment = await Reservation.find({ paymentStatus: { $in: ['Paid', 'Partially Paid'] } });
+        const totalRevenue = reservationsWithPayment.reduce((sum, res) => sum + (res.paidAmount || 0), 0);
+
+        const pendingBookings = await Reservation.countDocuments({ status: 'pending' });
+
+        const todaysCheckIns = await Reservation.countDocuments({
+            status: 'confirmed',
+            checkInDate: { $gte: todayStart, $lte: todayEnd }
+        });
+
+        const todaysCheckOuts = await Reservation.countDocuments({
+            status: 'checked-in',
+            checkOutDate: { $gte: todayStart, $lte: todayEnd }
+        });
+
+        const pendingServiceRequests = await ServiceRequest.countDocuments({ status: 'pending' });
+
+        const roomsToClean = await Room.countDocuments({ cleaningStatus: { $in: ['Dirty', 'Cleaning'] } });
+        
+        // Handle potential case-insensitivity of status
+        const maintenanceRooms = await Room.countDocuments({ status: { $regex: /^maintenance$/i } });
+
+        const totalGuests = await User.countDocuments({ role: 'guest' });
 
         // 2. Room Status for Doughnut/Pie Chart
         const roomsByStatus = await Room.aggregate([
-            { $group: { _id: '$status', count: { $sum: 1 } } }
+            { $group: { _id: { $toLower: '$status' }, count: { $sum: 1 } } }
         ]);
-        const roomStatusData = roomsByStatus.map(r => ({ name: r._id, value: r.count }));
+        const roomStatusData = roomsByStatus.map(r => ({ name: r._id.charAt(0).toUpperCase() + r._id.slice(1), value: r.count }));
 
         // 3. Revenue Trend (Monthly) for Line Chart
-        // Grouping reservations by month created (or check-in)
         const currentYear = new Date().getFullYear();
         const monthlyRevenue = await Reservation.aggregate([
             { 
@@ -51,17 +74,20 @@ exports.getDashboardAnalytics = async (req, res) => {
 
         // 4. Booking Status
         const bookingsByStatus = await Reservation.aggregate([
-            { $group: { _id: '$status', count: { $sum: 1 } } }
+            { $group: { _id: { $toLower: '$status' }, count: { $sum: 1 } } }
         ]);
-        const bookingStatusData = bookingsByStatus.map(b => ({ name: b._id, value: b.count }));
+        const bookingStatusData = bookingsByStatus.map(b => ({ name: b._id.charAt(0).toUpperCase() + b._id.slice(1), value: b.count }));
 
         res.status(200).json({
             kpis: {
                 totalRevenue,
-                totalRooms,
-                availableRooms,
-                occupiedRooms,
-                occupancyRate: totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0
+                pendingBookings,
+                todaysCheckIns,
+                todaysCheckOuts,
+                pendingServiceRequests,
+                roomsToClean,
+                maintenanceRooms,
+                totalGuests
             },
             charts: {
                 roomStatusData,

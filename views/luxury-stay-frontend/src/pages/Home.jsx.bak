@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBed, faUsers, faConciergeBell, faCalendarPlus, faClipboardList, faCommentDots, faChartLine, faDoorOpen, faMoneyBillWave, faBroom, faWrench, faUserTie, faSignInAlt, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icons';
+import { faBed, faUsers, faConciergeBell, faCalendarPlus, faClipboardList, faCommentDots, faChartLine, faDoorOpen, faMoneyBillWave, faBroom, faWrench, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import NotificationsDropdown from '../components/NotificationsDropdown';
@@ -12,13 +12,14 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({
     totalRevenue: 0,
-    pendingBookings: 0,
-    todaysCheckIns: 0,
-    todaysCheckOuts: 0,
-    pendingServiceRequests: 0,
+    totalBookings: 0,
+    availableRooms: 0,
+    occupiedRooms: 0,
+    occupancyRate: 0,
     cleaningRooms: 0,
     maintenanceRooms: 0,
-    totalGuests: 0
+    totalGuests: 0,
+    totalStaff: 0
   });
   
   const [charts, setCharts] = useState({
@@ -36,21 +37,26 @@ const Home = () => {
     if (user && user.role !== 'guest') {
       const fetchStats = async () => {
         try {
-          const [analyticsRes] = await Promise.all([
-            api.get('/analytics')
+          const [analyticsRes, userData, staffData] = await Promise.all([
+            api.get('/analytics'),
+            api.get('/users'),
+            api.get('/staff')
           ]);
 
           const { kpis, charts: chartsData } = analyticsRes.data;
+          const users = userData.data;
+          const staff = staffData.data;
 
           setStats({
             totalRevenue: kpis.totalRevenue || 0,
-            pendingBookings: kpis.pendingBookings || 0,
-            todaysCheckIns: kpis.todaysCheckIns || 0,
-            todaysCheckOuts: kpis.todaysCheckOuts || 0,
-            pendingServiceRequests: kpis.pendingServiceRequests || 0,
-            cleaningRooms: kpis.roomsToClean || 0,
-            maintenanceRooms: kpis.maintenanceRooms || 0,
-            totalGuests: kpis.totalGuests || 0
+            totalBookings: chartsData.bookingStatusData.reduce((acc, curr) => acc + curr.value, 0),
+            availableRooms: kpis.availableRooms || 0,
+            occupiedRooms: kpis.occupiedRooms || 0,
+            occupancyRate: kpis.occupancyRate || 0,
+            cleaningRooms: (chartsData.roomStatusData.find(r => r.name === 'Cleaning') || {}).value || 0,
+            maintenanceRooms: (chartsData.roomStatusData.find(r => r.name === 'Maintenance') || {}).value || 0,
+            totalGuests: users.filter(u => u.role === 'guest').length,
+            totalStaff: staff.length
           });
 
           setCharts({
@@ -107,38 +113,38 @@ const Home = () => {
                 <FontAwesomeIcon icon={faClipboardList} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Pending Bookings</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.pendingBookings}</h3>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Bookings</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.totalBookings}</h3>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
               <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-2xl">
-                <FontAwesomeIcon icon={faSignInAlt} />
+                <FontAwesomeIcon icon={faDoorOpen} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Today's Check-ins</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.todaysCheckIns}</h3>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Available Rooms</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.availableRooms}</h3>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-              <div className="w-14 h-14 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center text-2xl">
-                <FontAwesomeIcon icon={faSignOutAlt} />
+              <div className="w-14 h-14 bg-cyan-100 text-cyan-600 rounded-xl flex items-center justify-center text-2xl">
+                <FontAwesomeIcon icon={faBed} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Today's Check-outs</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.todaysCheckOuts}</h3>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Occupied Rooms</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.occupiedRooms}</h3>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
               <div className="w-14 h-14 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-2xl">
-                <FontAwesomeIcon icon={faConciergeBell} />
+                <FontAwesomeIcon icon={faUsers} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Pending Services</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.pendingServiceRequests}</h3>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Guests</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.totalGuests}</h3>
               </div>
             </div>
 
@@ -147,7 +153,7 @@ const Home = () => {
                 <FontAwesomeIcon icon={faBroom} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Rooms to Clean</p>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Cleaning</p>
                 <h3 className="text-2xl font-bold text-gray-800">{stats.cleaningRooms}</h3>
               </div>
             </div>
@@ -164,11 +170,11 @@ const Home = () => {
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
               <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl">
-                <FontAwesomeIcon icon={faUsers} />
+                <FontAwesomeIcon icon={faUserTie} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Guests</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.totalGuests}</h3>
+                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Staff</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.totalStaff}</h3>
               </div>
             </div>
           </div>
