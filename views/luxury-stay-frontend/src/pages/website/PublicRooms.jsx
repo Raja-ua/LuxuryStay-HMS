@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useSettings } from '../../context/SettingsContext';
 import { calculateDynamicPricing } from '../../utils/pricing';
 
@@ -13,6 +13,7 @@ const PublicRooms = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [user, setUser] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [bookingData, setBookingData] = useState({ 
     checkInDate: '', checkOutDate: '',
@@ -82,6 +83,8 @@ const PublicRooms = () => {
       const { total } = getTotals();
       if (total <= 0) return toast.error('Invalid dates selected');
       
+      setIsSubmitting(true);
+      
       const payload = {
         guestId: user._id,
         roomId: selectedRoom._id,
@@ -96,6 +99,8 @@ const PublicRooms = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       toast.error('Booking failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -259,8 +264,14 @@ const PublicRooms = () => {
                           <span className="text-[#d4af37]">${totals.total.toFixed(2)}</span>
                        </div>
                        
-                       <button type="submit" className="w-full bg-[#1b3658] hover:bg-[#122640] text-white font-bold py-4 rounded-none transition shadow-lg flex justify-center items-center gap-2 uppercase tracking-widest text-sm">
-                         Confirm Reservation
+                       <button disabled={isSubmitting} type="submit" className="w-full bg-[#1b3658] hover:bg-[#122640] text-white font-bold py-4 rounded-none transition shadow-lg flex justify-center items-center gap-2 uppercase tracking-widest text-sm disabled:opacity-70 disabled:cursor-not-allowed">
+                         {isSubmitting ? (
+                           <>
+                             <FontAwesomeIcon icon={faSpinner} spin /> Processing...
+                           </>
+                         ) : (
+                           'Confirm Reservation'
+                         )}
                        </button>
                        <p className="text-center text-xs text-gray-400 mt-4 font-medium leading-relaxed">
                           By proceeding, you agree to our Terms & Conditions and the hotel's Cancellation Policy.
