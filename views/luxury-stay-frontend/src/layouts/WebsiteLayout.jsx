@@ -71,6 +71,12 @@ const WebsiteLayout = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isNotificationOpen && badgeCount === 0 && unreadIds.length > 0) {
+      setUnreadIds([]);
+    }
+  }, [isNotificationOpen, badgeCount, unreadIds.length]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     window.location.replace('/');
@@ -134,9 +140,6 @@ const WebsiteLayout = () => {
                         const newCleared = Array.from(new Set([...clearedNotifs, ...unreadIds]));
                         localStorage.setItem('clearedNotifs', JSON.stringify(newCleared));
                         setBadgeCount(0);
-                      }
-                      if (isNotificationOpen) {
-                        setUnreadIds([]);
                       }
                     }}
                     className="hidden md:block text-gray-500 hover:text-blue-600 transition text-xl relative outline-none mt-1"
