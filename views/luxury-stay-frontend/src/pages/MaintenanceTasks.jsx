@@ -108,6 +108,17 @@ const MaintenanceTasks = () => {
     }
   };
 
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      setTasks(tasks.map(t => t._id === id ? { ...t, status: newStatus } : t));
+      await api.put(`/maintenance/${id}`, { status: newStatus });
+      toast.success('Status updated successfully');
+    } catch (error) {
+      toast.error('Failed to update status');
+      fetchData();
+    }
+  };
+
   const getStatusColor = (status) => {
     switch(status) {
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
@@ -169,9 +180,16 @@ const MaintenanceTasks = () => {
                     <td className={`p-4 ${getPriorityColor(task.priority)}`}>{task.priority}</td>
                     {!isMaintenanceStaff && <td className="p-4 font-medium text-gray-700">{task.assignedTo?.fullName || 'Unassigned'}</td>}
                     <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(task.status)}`}>
-                        {task.status}
-                      </span>
+                      <select 
+                        value={task.status} 
+                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold cursor-pointer outline-none appearance-none ${getStatusColor(task.status)} border border-transparent hover:border-gray-300 focus:ring-2 focus:ring-blue-500/50 pr-7 text-center`}
+                        style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundPosition: 'right 0.3rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em 1em' }}
+                      >
+                        <option value="Pending" className="bg-white text-gray-900">Pending</option>
+                        <option value="In Progress" className="bg-white text-gray-900">In Progress</option>
+                        <option value="Resolved" className="bg-white text-gray-900">Resolved</option>
+                      </select>
                     </td>
                     <td className="p-4 flex justify-center gap-3">
                       <button onClick={() => handleOpenModal(task)} className="text-blue-500 hover:text-blue-700 transition-colors p-2 bg-blue-50 rounded-lg hover:bg-blue-100" title={isMaintenanceStaff ? "Update Status" : "Edit Task"}>
