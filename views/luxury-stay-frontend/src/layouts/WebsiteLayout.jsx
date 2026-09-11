@@ -35,7 +35,7 @@ const WebsiteLayout = () => {
         // Sort newest first
         userRelevant.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
 
-        const unread = userRelevant.filter(r => !clearedNotifs.includes(r._id)).map(r => r._id);
+        const unread = userRelevant.filter(r => !clearedNotifs.includes(`${r._id}-${r.status}`)).map(r => `${r._id}-${r.status}`);
         
         setNotifications(userRelevant);
         setUnreadIds(unread);
@@ -166,7 +166,7 @@ const WebsiteLayout = () => {
                       <div className="max-h-[60vh] md:max-h-72 overflow-y-auto">
                         {notifications.length > 0 ? (
                           notifications.map(notif => {
-                            const isNew = unreadIds.includes(notif._id);
+                            const isNew = unreadIds.includes(`${notif._id}-${notif.status}`);
                             return (
                               <Link key={notif._id} to="/my-bookings" onClick={() => { setIsNotificationOpen(false); setUnreadIds([]); }} className={`block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition relative ${isNew ? 'bg-green-50/30' : ''}`}>
                                 <div className="flex items-start gap-3">
@@ -210,7 +210,7 @@ const WebsiteLayout = () => {
                     <FontAwesomeIcon icon={faChevronDown} className={`text-xs ml-1 text-blue-600 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     
                     {/* Red dot on profile icon for mobile if there are notifications */}
-                    {unreadIds.length > 0 && (
+                    {badgeCount > 0 && (
                       <span className="md:hidden absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white"></span>
                     )}
                   </div>
