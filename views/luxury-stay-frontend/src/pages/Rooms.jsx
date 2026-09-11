@@ -167,6 +167,7 @@ const Rooms = () => {
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Floor</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Capacity</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Housekeeping</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
@@ -193,6 +194,15 @@ const Rooms = () => {
                       <option value="occupied">OCCUPIED</option>
                       <option value="maintenance">MAINTENANCE</option>
                     </select>
+                  </td>
+                  <td className="p-5">
+                    <span className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border ${
+                      (room.cleaningStatus || 'Clean') === 'Clean' ? 'bg-green-100 text-green-700 border-green-200' :
+                      room.cleaningStatus === 'Dirty' ? 'bg-red-100 text-red-700 border-red-200' :
+                      'bg-yellow-100 text-yellow-700 border-yellow-200'
+                    }`}>
+                      {room.cleaningStatus || 'Clean'}
+                    </span>
                   </td>
                   <td className="p-5 text-right space-x-3">
                     <button onClick={() => viewDetail(room._id)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center" title="View Detail">
