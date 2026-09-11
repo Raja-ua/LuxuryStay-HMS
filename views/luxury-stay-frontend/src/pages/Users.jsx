@@ -71,16 +71,6 @@ const Users = () => {
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await api.put(`/users/${id}`, { status: newStatus });
-      toast.success('Status updated');
-      fetchUsers();
-    } catch (err) {
-      toast.error('Failed to update status');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
@@ -107,8 +97,8 @@ const Users = () => {
     <div className="animate-fade-in-up">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Users & Staff</h1>
-          <p className="text-gray-500 mt-1">Manage administrators, staff, and guest accounts</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Users</h1>
+          <p className="text-gray-500 mt-1">Manage administrators and guest accounts</p>
         </div>
       </div>
 
@@ -121,7 +111,6 @@ const Users = () => {
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">CNIC</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="p-5 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
@@ -149,28 +138,18 @@ const Users = () => {
                       {u.role || 'guest'}
                     </span>
                   </td>
-                  <td className="p-5">
-                    <select 
-                      value={u.status || 'Active'}
-                      onChange={(e) => handleStatusChange(u._id, e.target.value)}
-                      className={`px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-wide shadow-sm border cursor-pointer outline-none status-select ${
-                        u.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'
-                      }`}
-                    >
-                      <option value="Active">ACTIVE</option>
-                      <option value="Inactive">INACTIVE</option>
-                    </select>
-                  </td>
-                  <td className="p-5 text-right space-x-2">
-                    <button onClick={() => viewDetail(u._id)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center" title="View Detail">
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
-                    <button onClick={() => openEditModal(u)} className="w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center" title="Edit">
+                  <td className="p-5 text-right">
+                    <div className="flex justify-end gap-2 min-w-max">
+                      <button onClick={() => viewDetail(u._id)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center shrink-0" title="View Detail">
+                        <FontAwesomeIcon icon={faEye} />
+                      </button>
+                    <button onClick={() => openEditModal(u)} className="w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center shrink-0" title="Edit">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    <button onClick={() => handleDelete(u._id)} className="w-9 h-9 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center" title="Delete">
+                    <button onClick={() => handleDelete(u._id)} className="w-9 h-9 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center shrink-0" title="Delete">
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
