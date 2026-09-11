@@ -71,8 +71,7 @@ const WebsiteLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    setUser(null);
-    navigate('/');
+    window.location.replace('/');
   };
 
   return (

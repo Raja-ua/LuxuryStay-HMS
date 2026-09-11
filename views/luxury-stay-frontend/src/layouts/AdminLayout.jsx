@@ -76,7 +76,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    navigate('/login');
+    window.location.replace('/login');
   };
 
   const toggleMenu = (name) => {
