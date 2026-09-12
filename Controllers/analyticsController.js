@@ -28,7 +28,7 @@ exports.getDashboardAnalytics = async (req, res) => {
             checkOutDate: { $gte: todayStart, $lte: todayEnd }
         });
 
-        const pendingServiceRequests = await ServiceRequest.countDocuments({ status: 'pending' });
+        const pendingServiceRequests = await ServiceRequest.countDocuments({ status: { $regex: /^pending$/i } });
 
         const roomsToClean = await Room.countDocuments({ cleaningStatus: { $in: ['Dirty', 'Cleaning'] } });
         
