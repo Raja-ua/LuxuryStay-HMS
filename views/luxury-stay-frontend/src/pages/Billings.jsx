@@ -32,11 +32,21 @@ const Billings = () => {
 
   useEffect(() => { fetchData(); }, []);
 
-  const calculateTotal = (room, additional) => {
-    const subtotal = Number(room) + Number(additional);
+  const calculateBillingAmounts = (reservationTotal, additional) => {
     const taxRate = settings?.taxRate || 0;
-    const tax = subtotal * (taxRate / 100);
-    return { tax, total: subtotal + tax };
+    const baseTotal = Number(reservationTotal) || 0;
+    const addSub = Number(additional) || 0;
+    
+    // Calculate reverse room charges to 2 decimal places to avoid float bugs
+    const roomCharges = Number((baseTotal / (1 + taxRate / 100)).toFixed(2));
+    const baseTax = Number((baseTotal - roomCharges).toFixed(2));
+    
+    const addTax = Number((addSub * (taxRate / 100)).toFixed(2));
+    
+    const finalTax = Number((baseTax + addTax).toFixed(2));
+    const finalTotal = Number((baseTotal + addSub + addTax).toFixed(2));
+    
+    return { roomCharges, tax: finalTax, total: finalTotal };
   };
 
   const openAddModal = () => {
@@ -93,16 +103,12 @@ const Billings = () => {
     const resId = e.target.value;
     const selectedRes = reservations.find(r => r._id === resId);
     if (selectedRes) {
-      const taxRate = settings?.taxRate || 0;
-      // Extract original room charges (without tax) from the reservation's totalAmount
-      // This preserves any weekend/holiday surcharges that were applied during booking
-      const roomCharges = selectedRes.totalAmount / (1 + taxRate / 100);
-
-      const { tax, total } = calculateTotal(roomCharges, formData.additionalCharges);
+      const { roomCharges, tax, total } = calculateBillingAmounts(selectedRes.totalAmount, formData.additionalCharges);
 
       // Automate bill status based on reservation payment
       let defaultStatus = 'pending';
-      if ((selectedRes.paidAmount || 0) >= total && total > 0) {
+      const paid = Number(selectedRes.paidAmount) || 0;
+      if (paid >= total && total > 0) {
         defaultStatus = 'paid';
       } else if (selectedRes.paymentStatus === 'Refunded') {
         defaultStatus = 'refunded';
@@ -112,7 +118,7 @@ const Billings = () => {
         ...formData,
         reservationId: resId,
         guestId: selectedRes.guestId?._id || '',
-        roomCharges: roomCharges,
+        roomCharges,
         taxAmount: tax,
         totalAmount: total,
         status: defaultStatus
@@ -124,15 +130,18 @@ const Billings = () => {
 
   const handleAdditionalChargesChange = (e) => {
     const additional = e.target.value;
-    const { tax, total } = calculateTotal(formData.roomCharges, additional);
+    const selectedRes = reservations.find(r => r._id === formData.reservationId);
+    const resTotal = selectedRes ? selectedRes.totalAmount : 0;
+    
+    const { roomCharges, tax, total } = calculateBillingAmounts(resTotal, additional);
     
     // Auto update status if they add charges that exceed paid amount
-    const selectedRes = reservations.find(r => r._id === formData.reservationId);
     let newStatus = formData.status;
     if (selectedRes) {
-      if ((selectedRes.paidAmount || 0) >= total && total > 0) {
+      const paid = Number(selectedRes.paidAmount) || 0;
+      if (paid >= total && total > 0) {
         newStatus = 'paid';
-      } else if ((selectedRes.paidAmount || 0) < total && newStatus === 'paid') {
+      } else if (paid < total && newStatus === 'paid') {
         newStatus = 'pending';
       }
     }
