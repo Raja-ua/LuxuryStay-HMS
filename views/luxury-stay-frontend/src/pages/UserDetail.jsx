@@ -39,8 +39,10 @@ const UserDetail = () => {
 
       <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden relative">
         {/* Banner */}
-        <div className="h-40 bg-[#1b3658] relative overflow-hidden">
+        <div className="h-40 bg-[#1b3658] border-b-4 border-[#d4af37] relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
+          {/* Subtle gold accent shape in the banner */}
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#d4af37] rounded-full opacity-10 blur-2xl"></div>
         </div>
         
         {/* Profile Info */}
@@ -48,9 +50,9 @@ const UserDetail = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-16 sm:-mt-20 mb-8">
             <div className="relative group">
               {user.image ? (
-                <img src={user.image} alt={user.fullName} className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-xl bg-white relative z-10" />
+                <img src={user.image} alt={user.fullName} className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-xl bg-white relative z-10 ring-4 ring-[#d4af37]/30" />
               ) : (
-                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-xl relative z-10">
+                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-50 flex items-center justify-center border-4 border-white shadow-xl relative z-10 ring-4 ring-[#d4af37]/30">
                   <FontAwesomeIcon icon={faUser} className="text-[#1b3658] text-6xl opacity-50" />
                 </div>
               )}
@@ -72,8 +74,8 @@ const UserDetail = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-gray-100/50">
-              <div className="w-12 h-12 rounded-xl bg-white text-[#1b3658] border border-gray-200 shadow-sm flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+              <div className="w-12 h-12 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
                 <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
               </div>
               <div>
@@ -82,8 +84,8 @@ const UserDetail = () => {
               </div>
             </div>
             
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-gray-100/50">
-              <div className="w-12 h-12 rounded-xl bg-white text-[#1b3658] border border-gray-200 shadow-sm flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+              <div className="w-12 h-12 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
                 <FontAwesomeIcon icon={faPhone} className="text-lg" />
               </div>
               <div>
@@ -92,8 +94,8 @@ const UserDetail = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-gray-100/50">
-              <div className="w-12 h-12 rounded-xl bg-white text-[#1b3658] border border-gray-200 shadow-sm flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+              <div className="w-12 h-12 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
                 <FontAwesomeIcon icon={faIdCard} className="text-lg" />
               </div>
               <div>
@@ -102,8 +104,8 @@ const UserDetail = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-gray-100/50">
-              <div className="w-12 h-12 rounded-xl bg-white text-[#1b3658] border border-gray-200 shadow-sm flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+              <div className="w-12 h-12 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
                 <FontAwesomeIcon icon={faGlobe} className="text-lg" />
               </div>
               <div>
@@ -112,8 +114,8 @@ const UserDetail = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-gray-100/50 md:col-span-2">
-              <div className="w-12 h-12 rounded-xl bg-white text-[#1b3658] border border-gray-200 shadow-sm flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02] md:col-span-2">
+              <div className="w-12 h-12 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
                 <FontAwesomeIcon icon={faMapMarkerAlt} className="text-lg" />
               </div>
               <div>
