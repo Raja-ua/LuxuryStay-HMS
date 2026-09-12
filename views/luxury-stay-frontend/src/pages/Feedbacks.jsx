@@ -60,9 +60,17 @@ const Feedbacks = () => {
             </div>
             
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-bold text-xl border-2 border-white shadow-sm">
-                {(f.guestId?.fullName || f.guestId?.name || 'G')[0].toUpperCase()}
-              </div>
+              {f.guestId?.image ? (
+                <img 
+                  src={f.guestId.image} 
+                  alt={f.guestId?.fullName || f.guestId?.name || 'Guest'} 
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-bold text-xl border-2 border-white shadow-sm">
+                  {(f.guestId?.fullName || f.guestId?.name || 'G')[0].toUpperCase()}
+                </div>
+              )}
               <div>
                 <h3 className="font-bold text-lg text-gray-800 leading-tight">
                   {f.guestId?.fullName || f.guestId?.name || 'Guest User'}
