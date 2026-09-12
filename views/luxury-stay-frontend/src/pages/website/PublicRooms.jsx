@@ -308,48 +308,48 @@ const PublicRooms = () => {
       </div>
 
       <div className="container mx-auto px-4 py-16 max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {rooms.map((room) => (
-            <div key={room._id} className="flex flex-col bg-white shadow-xl border border-gray-100 overflow-hidden group hover:-translate-y-2 transition-transform duration-500 rounded-none relative">
-              <div className="w-full h-64 relative overflow-hidden bg-gray-200">
+            <div key={room._id} className="flex flex-col bg-white shadow-xl hover:shadow-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-500 rounded-2xl relative border border-gray-100">
+              <div className="w-full h-56 relative overflow-hidden bg-gray-200">
                 {room.images && room.images.length > 0 ? (
                   <img src={room.images[0]} alt={`Room ${room.roomNumber}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
                 )}
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-900 shadow-sm border-l-2 border-gray-900">
+                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-[#d4af37] shadow-sm rounded-full">
                   {room.type}
                 </div>
               </div>
-              <div className="absolute top-[14rem] right-4 bg-gray-900 text-white px-4 py-2 font-bold shadow-xl border border-gray-700 text-sm">
-                ${room.pricePerNight} <span className="text-[10px] font-normal uppercase tracking-wider">/ Night</span>
-              </div>
               <div className="w-full p-6 flex flex-col flex-grow justify-between text-left">
                 <div>
-                  <h3 className="text-2xl font-serif text-gray-900 mb-3 mt-1">Room {room.roomNumber}</h3>
-                  <p className="text-gray-500 text-sm font-light leading-relaxed mb-5 line-clamp-3">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-xl font-serif text-gray-900 font-bold">Room {room.roomNumber}</h3>
+                    <div className="text-right">
+                      <span className="text-xl font-bold text-[#d4af37]">${room.pricePerNight}</span>
+                      <span className="text-[10px] text-gray-500 block uppercase tracking-widest mt-0.5">/ Night</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm font-light leading-relaxed mb-6 line-clamp-3">
                     {room.description || 'Experience unparalleled comfort in this exquisitely designed room, offering premium amenities and a serene atmosphere tailored for a perfect stay.'}
                   </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 mb-8">
-                    {room.features && room.features.map((f, i) => (
-                      <span key={i} className="text-sm text-gray-600 flex items-center gap-1 font-medium">
-                        <FontAwesomeIcon icon={faCheckCircle} className="text-gray-900 text-xs" /> {f}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {room.features && room.features.slice(0, 3).map((f, i) => (
+                      <span key={i} className="text-[10px] bg-gray-50 px-2.5 py-1 rounded-md text-gray-600 font-medium border border-gray-100">
+                        {f}
                       </span>
                     ))}
-                    <span className="text-sm text-gray-600 flex items-center gap-1 font-medium">
-                      <FontAwesomeIcon icon={faCheckCircle} className="text-gray-900 text-xs" /> {room.capacity} Guests
-                    </span>
-                    <span className="text-sm text-gray-600 flex items-center gap-1 font-medium">
-                      <FontAwesomeIcon icon={faCheckCircle} className="text-gray-900 text-xs" /> Floor {room.floor}
+                    <span className="text-[10px] bg-gray-50 px-2.5 py-1 rounded-md text-gray-600 font-medium border border-gray-100">
+                      {room.capacity} Guests
                     </span>
                   </div>
                 </div>
-                <div className="mt-auto">
+                <div className="mt-auto pt-2">
                   <button 
                     onClick={() => handleBookClick(room)}
-                    className="w-full bg-transparent border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold uppercase tracking-widest text-sm py-4 px-6 transition duration-300"
+                    className="w-full bg-[#1b3658] hover:bg-[#122640] text-white font-bold uppercase tracking-widest text-xs py-3.5 px-6 transition duration-300 rounded-xl shadow-md hover:shadow-lg"
                   >
-                    Reserve This Room
+                    Reserve Now
                   </button>
                 </div>
               </div>
