@@ -51,13 +51,14 @@ exports.getDashboardAnalytics = async (req, res) => {
                     createdAt: { 
                         $gte: new Date(`${currentYear}-01-01`), 
                         $lte: new Date(`${currentYear}-12-31`) 
-                    } 
+                    },
+                    paymentStatus: { $in: ['Paid', 'Partially Paid'] }
                 } 
             },
             {
                 $group: {
                     _id: { $month: "$createdAt" },
-                    revenue: { $sum: "$totalAmount" }
+                    revenue: { $sum: "$paidAmount" }
                 }
             },
             { $sort: { "_id": 1 } }
