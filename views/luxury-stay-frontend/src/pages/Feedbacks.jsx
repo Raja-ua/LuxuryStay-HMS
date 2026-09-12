@@ -49,7 +49,7 @@ const Feedbacks = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {feedbacks.map(f => (
           <div key={f._id} className="bg-white p-8 rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group">
-            <div className="absolute top-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-8 right-8 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
                 onClick={() => handleDelete(f._id)} 
                 className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center"
