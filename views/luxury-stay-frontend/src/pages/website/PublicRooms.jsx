@@ -308,26 +308,26 @@ const PublicRooms = () => {
       </div>
 
       <div className="container mx-auto px-4 py-16 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {rooms.map((room) => (
             <div key={room._id} className="flex flex-col bg-white shadow-xl border border-gray-100 overflow-hidden group hover:-translate-y-2 transition-transform duration-500 rounded-none relative">
-              <div className="w-full h-80 relative overflow-hidden bg-gray-200">
+              <div className="w-full h-64 relative overflow-hidden bg-gray-200">
                 {room.images && room.images.length > 0 ? (
                   <img src={room.images[0]} alt={`Room ${room.roomNumber}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
                 )}
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-bold tracking-widest uppercase text-gray-900 shadow-sm border-l-2 border-gray-900">
+                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-900 shadow-sm border-l-2 border-gray-900">
                   {room.type}
                 </div>
               </div>
-              <div className="absolute top-[18rem] right-6 bg-gray-900 text-white px-6 py-3 font-bold shadow-xl border border-gray-700">
-                ${room.pricePerNight} <span className="text-xs font-normal uppercase tracking-wider">/ Night</span>
+              <div className="absolute top-[14rem] right-4 bg-gray-900 text-white px-4 py-2 font-bold shadow-xl border border-gray-700 text-sm">
+                ${room.pricePerNight} <span className="text-[10px] font-normal uppercase tracking-wider">/ Night</span>
               </div>
-              <div className="w-full p-10 flex flex-col flex-grow justify-between text-left">
+              <div className="w-full p-6 flex flex-col flex-grow justify-between text-left">
                 <div>
-                  <h3 className="text-3xl font-serif text-gray-900 mb-4 mt-2">Room {room.roomNumber}</h3>
-                  <p className="text-gray-500 font-light leading-relaxed mb-6 line-clamp-3">
+                  <h3 className="text-2xl font-serif text-gray-900 mb-3 mt-1">Room {room.roomNumber}</h3>
+                  <p className="text-gray-500 text-sm font-light leading-relaxed mb-5 line-clamp-3">
                     {room.description || 'Experience unparalleled comfort in this exquisitely designed room, offering premium amenities and a serene atmosphere tailored for a perfect stay.'}
                   </p>
                   <div className="flex flex-wrap gap-x-4 gap-y-2 mb-8">
