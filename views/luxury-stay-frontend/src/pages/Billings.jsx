@@ -244,7 +244,7 @@ const Billings = () => {
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Additional Charges ($)</label>
-              <input required type="number" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.additionalCharges} onChange={handleAdditionalChargesChange} />
+              <input required type="number" step="0.01" className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.additionalCharges} onChange={handleAdditionalChargesChange} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-5">

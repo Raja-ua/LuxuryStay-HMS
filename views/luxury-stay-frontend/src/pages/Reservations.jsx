@@ -361,7 +361,7 @@ const Reservations = () => {
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-bold text-blue-800 mb-1 uppercase tracking-wide">Amount ($)</label>
-                  <input required type="number" min="1" max={formData.totalAmount || 1000000} className="w-full bg-white border border-blue-200 text-blue-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.initialPaymentAmount || ''} onChange={e => setFormData({...formData, initialPaymentAmount: e.target.value})} />
+                  <input required type="number" step="0.01" min="1" max={formData.totalAmount || 1000000} className="w-full bg-white border border-blue-200 text-blue-900 p-3 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" value={formData.initialPaymentAmount || ''} onChange={e => setFormData({...formData, initialPaymentAmount: e.target.value})} />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-blue-800 mb-1 uppercase tracking-wide">Payment Method</label>
@@ -419,7 +419,7 @@ const Reservations = () => {
             <>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Amount to Pay ($) *</label>
-                <input required type="number" min="1" max={selectedResForPayment ? (selectedResForPayment.totalAmount - (selectedResForPayment.paidAmount || 0)) : 100000} className="w-full bg-white border border-gray-300 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all" value={paymentData.amount} onChange={e => setPaymentData({...paymentData, amount: e.target.value})} />
+                <input required type="number" step="0.01" min="1" max={selectedResForPayment ? (selectedResForPayment.totalAmount - (selectedResForPayment.paidAmount || 0)) : 100000} className="w-full bg-white border border-gray-300 text-gray-900 p-3 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all" value={paymentData.amount} onChange={e => setPaymentData({...paymentData, amount: e.target.value})} />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 uppercase tracking-wide">Payment Method *</label>

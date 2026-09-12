@@ -181,7 +181,7 @@ const PublicRooms = () => {
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <label className="block text-gray-700 font-medium mb-2 text-sm uppercase tracking-wider">Initial Payment ($) *</label>
-                            <input required type="number" min="1" max={totals.total || 99999} className="w-full border-gray-200 border p-4 bg-gray-50 focus:ring-2 focus:ring-[#d4af37] outline-none transition-all rounded-none" placeholder="Minimum $1 required" value={bookingData.initialPaymentAmount} onChange={e => setBookingData({...bookingData, initialPaymentAmount: e.target.value})} />
+                            <input required type="number" step="0.01" min="1" max={totals.total || 99999} className="w-full border-gray-200 border p-4 bg-gray-50 focus:ring-2 focus:ring-[#d4af37] outline-none transition-all rounded-none" placeholder="Minimum $1 required" value={bookingData.initialPaymentAmount} onChange={e => setBookingData({...bookingData, initialPaymentAmount: e.target.value})} />
                             {bookingData.initialPaymentAmount && totals.total > 0 && (
                               <p className="text-xs mt-3 text-gray-600 font-medium bg-blue-50 p-2 border border-blue-100">
                                 Remaining Balance: <span className="text-red-500 font-bold">${Math.max(0, totals.total - Number(bookingData.initialPaymentAmount)).toFixed(2)}</span>
