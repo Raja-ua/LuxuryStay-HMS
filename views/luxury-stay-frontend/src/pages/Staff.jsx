@@ -196,14 +196,14 @@ const Staff = () => {
                       <option value="Inactive">INACTIVE</option>
                     </select>
                   </td>
-                  <td className="p-5 text-right space-x-2">
-                    <button onClick={() => viewDetail(s._id)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center" title="View Detail">
+                  <td className="p-5 text-right flex items-center justify-end gap-2 shrink-0 flex-nowrap whitespace-nowrap">
+                    <button onClick={() => viewDetail(s._id)} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors inline-flex items-center justify-center shrink-0" title="View Detail">
                       <FontAwesomeIcon icon={faEye} />
                     </button>
-                    <button onClick={() => openEditModal(s)} className="w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center" title="Edit">
+                    <button onClick={() => openEditModal(s)} className="w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-colors inline-flex items-center justify-center shrink-0" title="Edit">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    <button onClick={() => handleDelete(s._id)} className="w-9 h-9 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center" title="Delete">
+                    <button onClick={() => handleDelete(s._id)} className="w-9 h-9 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors inline-flex items-center justify-center shrink-0" title="Delete">
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
