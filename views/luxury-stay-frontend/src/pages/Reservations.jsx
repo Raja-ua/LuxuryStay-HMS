@@ -430,7 +430,7 @@ const Reservations = () => {
               {Number(paymentData.amount) > 0 && selectedResForPayment && (
                 <div className="bg-green-50 text-green-900 p-4 rounded-xl border border-green-200 flex justify-between items-center">
                   <span className="font-bold text-sm uppercase tracking-wider">Remaining Balance</span>
-                  <span className="text-2xl font-black">${Math.max(0, (selectedResForPayment.totalAmount - (selectedResForPayment.paidAmount || 0)) - Number(paymentData.amount))}</span>
+                  <span className="text-2xl font-black">${Math.max(0, (selectedResForPayment.totalAmount - (selectedResForPayment.paidAmount || 0)) - Number(paymentData.amount)).toFixed(2)}</span>
                 </div>
               )}
               <button type="submit" className="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 active:scale-95 transition-all shadow-lg hover:shadow-green-500/30 text-lg">Process Payment</button>
