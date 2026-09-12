@@ -142,13 +142,13 @@ const MaintenanceTasks = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">{isMaintenanceStaff ? 'My Assigned Tasks' : 'Maintenance & Housekeeping'}</h1>
           <p className="text-gray-500 mt-1 font-medium">{isMaintenanceStaff ? 'Update your task status here' : 'Manage cleaning and repair tasks'}</p>
         </div>
         {!isMaintenanceStaff && (
-          <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-2">
+          <button onClick={() => handleOpenModal()} className="shrink-0 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-2">
             <FontAwesomeIcon icon={faPlus} /> New Task
           </button>
         )}

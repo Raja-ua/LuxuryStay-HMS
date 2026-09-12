@@ -183,12 +183,14 @@ const Reservations = () => {
 
   return (
     <div className="animate-fade-in-up">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Reservations</h1>
-          <p className="text-gray-500 mt-1">Manage guest bookings, statuses, and payments</p>
+          <p className="text-gray-500 mt-1">Manage all guest bookings, check-ins, and check-outs</p>
         </div>
-
+        <button onClick={openAddModal} className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all font-semibold flex items-center gap-2">
+          <FontAwesomeIcon icon={faPlus} /> Add Booking
+        </button>
       </div>
 
       <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">

@@ -147,12 +147,12 @@ const Staff = () => {
 
   return (
     <div className="animate-fade-in-up">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Staff Management</h1>
           <p className="text-gray-500 mt-1">Manage employees, roles, and statuses</p>
         </div>
-        <button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all font-semibold flex items-center gap-2">
+        <button onClick={openAddModal} className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all font-semibold flex items-center gap-2">
           <FontAwesomeIcon icon={faPlus} /> Add Staff
         </button>
       </div>
