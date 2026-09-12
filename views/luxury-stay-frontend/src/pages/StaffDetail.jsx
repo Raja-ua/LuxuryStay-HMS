@@ -44,9 +44,10 @@ const StaffDetail = () => {
 
       <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden relative">
         {/* Banner */}
-        <div className="h-40 bg-gradient-to-r from-indigo-600 to-purple-600 relative overflow-hidden">
+        <div className="h-40 bg-[#1b3658] border-b-4 border-[#d4af37] relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+          {/* Subtle gold accent shape in the banner */}
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#d4af37] rounded-full opacity-10 blur-2xl"></div>
         </div>
         
         {/* Profile Info */}
@@ -54,119 +55,119 @@ const StaffDetail = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-16 sm:-mt-20 mb-8">
             <div className="relative group">
               {staff.image ? (
-                <img src={staff.image} alt={staff.fullName} className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-xl bg-white relative z-10" />
+                <img src={staff.image} alt={staff.fullName} className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-xl bg-white relative z-10 ring-4 ring-[#d4af37]/30" />
               ) : (
-                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-gray-50 to-gray-200 flex items-center justify-center border-4 border-white shadow-xl relative z-10">
-                  <FontAwesomeIcon icon={faUserTie} className="text-gray-400 text-6xl" />
+                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-50 flex items-center justify-center border-4 border-white shadow-xl relative z-10 ring-4 ring-[#d4af37]/30">
+                  <FontAwesomeIcon icon={faUserTie} className="text-[#1b3658] text-6xl opacity-50" />
                 </div>
               )}
             </div>
             
             <div className="flex-1 pb-2">
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+              <h2 className="text-3xl font-black text-[#1b3658] tracking-tight flex items-center gap-3">
                 {staff.fullName}
                 <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wide shadow-sm border ${
-                  staff.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'
+                  staff.status === 'Active' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
                 }`}>
                   {staff.status}
                 </span>
               </h2>
-              <p className="text-indigo-600 font-bold uppercase tracking-widest text-sm mt-1">{staff.role}</p>
+              <p className="text-[#d4af37] font-bold uppercase tracking-widest text-sm mt-1">{staff.role}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-              <h3 className="text-lg font-black text-gray-800 mb-6 flex items-center gap-2">
-                <FontAwesomeIcon icon={faUserTie} className="text-indigo-500" /> Personal Information
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-colors hover:shadow-md">
+              <h3 className="text-lg font-black text-[#1b3658] mb-6 flex items-center gap-2">
+                <FontAwesomeIcon icon={faUserTie} className="text-[#d4af37]" /> Personal Information
               </h3>
-              <div className="grid grid-cols-1 gap-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faEnvelope} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Email Address</p>
-                    <p className="font-medium text-gray-900 break-all">{staff.email || 'N/A'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Email Address</p>
+                    <p className="font-semibold text-gray-900 break-all text-sm">{staff.email || 'N/A'}</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faPhone} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faPhone} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Contact Number</p>
-                    <p className="font-medium text-gray-900">{staff.contactNumber || 'N/A'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Contact Number</p>
+                    <p className="font-semibold text-gray-900 text-sm">{staff.contactNumber || 'N/A'}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faCalendarAlt} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Date of Birth</p>
-                    <p className="font-medium text-gray-900">{formatDate(staff.dateOfBirth)}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date of Birth</p>
+                    <p className="font-semibold text-gray-900 text-sm">{formatDate(staff.dateOfBirth)}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faMapMarkerAlt} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Address & City</p>
-                    <p className="font-medium text-gray-900 leading-relaxed">
-                      {staff.address || 'N/A'} {staff.city ? `, ${staff.city}` : ''}
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Address & City</p>
+                    <p className="font-semibold text-gray-900 leading-relaxed text-sm">
+                      {staff.address || staff.city ? `${staff.address || ''}${staff.address && staff.city ? ', ' : ''}${staff.city || ''}` : 'N/A'}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-              <h3 className="text-lg font-black text-gray-800 mb-6 flex items-center gap-2">
-                <FontAwesomeIcon icon={faBriefcase} className="text-purple-500" /> Work Details
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-colors hover:shadow-md">
+              <h3 className="text-lg font-black text-[#1b3658] mb-6 flex items-center gap-2">
+                <FontAwesomeIcon icon={faBriefcase} className="text-[#d4af37]" /> Work Details
               </h3>
-              <div className="grid grid-cols-1 gap-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faBriefcase} className="text-lg" />
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faBriefcase} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Assigned Work</p>
-                    <p className="font-medium text-gray-900">{staff.assignWork || 'N/A'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Assigned Work</p>
+                    <p className="font-semibold text-gray-900 text-sm">{staff.assignWork || 'N/A'}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faCalendarAlt} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Joining Date</p>
-                    <p className="font-medium text-gray-900">{formatDate(staff.joiningDate)}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Joining Date</p>
+                    <p className="font-semibold text-gray-900 text-sm">{formatDate(staff.joiningDate)}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faClock} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faClock} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Shift</p>
-                    <p className="font-medium text-gray-900">{staff.shift || 'N/A'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Shift</p>
+                    <p className="font-semibold text-gray-900 text-sm">{staff.shift || 'N/A'}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                    <FontAwesomeIcon icon={faMoneyBillWave} className="text-lg" />
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 transition-colors hover:bg-[#1b3658]/[0.02]">
+                  <div className="w-10 h-10 rounded-xl bg-[#1b3658] text-[#d4af37] shadow-sm flex items-center justify-center shrink-0">
+                    <FontAwesomeIcon icon={faMoneyBillWave} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Salary</p>
-                    <p className="font-medium text-gray-900">{staff.salary ? `$${staff.salary}` : 'N/A'}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Salary</p>
+                    <p className="font-semibold text-gray-900 text-sm">{staff.salary ? `$${staff.salary}` : 'N/A'}</p>
                   </div>
                 </div>
               </div>
