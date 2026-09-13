@@ -121,7 +121,9 @@ const Staff = () => {
 
     try {
       if (editingStaff) {
-        const response = await api.put(`/staff/${editingStaff._id}`, data);
+        const response = await api.put(`/staff/${editingStaff._id}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('Staff updated');
         
         // If the edited staff is the currently logged in user, update localStorage
@@ -135,7 +137,9 @@ const Staff = () => {
           window.location.reload();
         }
       } else {
-        await api.post('/staff', data);
+        await api.post('/staff', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('Staff created');
       }
       setIsModalOpen(false);
