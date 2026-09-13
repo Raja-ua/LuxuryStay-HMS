@@ -5,12 +5,13 @@ import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faEye, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faEye, faMinus, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const Rooms = () => {
   const [rooms, setRooms] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   
   // Form state
@@ -112,6 +113,7 @@ const Rooms = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== '' && formData[key] !== null && formData[key] !== undefined) {
@@ -139,6 +141,8 @@ const Rooms = () => {
       fetchRooms();
     } catch (err) {
       toast.error('Operation failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -312,7 +316,15 @@ const Rooms = () => {
               )}
             </div>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-lg hover:shadow-blue-500/30 mt-6">Save Room</button>
+          <button type="submit" disabled={isSubmitting} className={`w-full bg-[#9b7e51] text-white font-bold py-4 rounded-xl transition-all shadow-lg mt-6 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#866a41] active:scale-95'}`}>
+            {isSubmitting ? (
+              <>
+                <FontAwesomeIcon icon={faSpinner} spin /> Saving...
+              </>
+            ) : (
+              'Save Room'
+            )}
+          </button>
         </form>
       </Modal>
     </div>
