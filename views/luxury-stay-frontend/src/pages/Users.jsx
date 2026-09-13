@@ -75,7 +75,9 @@ const Users = () => {
     e.preventDefault();
     const data = new FormData();
     Object.keys(formData).forEach(key => {
-      if (formData[key]) data.append(key, formData[key]);
+      if (formData[key] !== '' && formData[key] !== null && formData[key] !== undefined) {
+        data.append(key, formData[key]);
+      }
     });
     if (imageFile) {
       data.append('image', imageFile);

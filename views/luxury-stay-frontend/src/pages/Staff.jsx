@@ -111,7 +111,7 @@ const Staff = () => {
     e.preventDefault();
     const data = new FormData();
     Object.keys(formData).forEach(key => {
-      if (formData[key] !== undefined && formData[key] !== null) {
+      if (formData[key] !== '' && formData[key] !== null && formData[key] !== undefined) {
         data.append(key, formData[key]);
       }
     });
@@ -140,7 +140,7 @@ const Staff = () => {
       }
       setIsModalOpen(false);
       fetchStaff();
-    } catch (err) { toast.error('Operation failed'); }
+    } catch (err) { toast.error(err.response?.data?.error || err.response?.data?.message || err.message || 'Operation failed'); }
   };
 
   return (
