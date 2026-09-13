@@ -18,15 +18,10 @@ const staffSchema = new mongoose.Schema({
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
 }, { timestamps: true });
 
-staffSchema.pre('save', async function(next) {
-    if (!this.isModified('password') || !this.password) return next();
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+staffSchema.pre('save', async function() {
+    if (!this.isModified('password') || !this.password) return;
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
 staffSchema.methods.comparePassword = async function(candidatePassword) {
