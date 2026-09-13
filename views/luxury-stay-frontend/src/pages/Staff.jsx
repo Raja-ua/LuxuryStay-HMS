@@ -111,7 +111,9 @@ const Staff = () => {
     e.preventDefault();
     const data = new FormData();
     Object.keys(formData).forEach(key => {
-      if (formData[key]) data.append(key, formData[key]);
+      if (formData[key] !== undefined && formData[key] !== null) {
+        data.append(key, formData[key]);
+      }
     });
     if (imageFile) {
       data.append('image', imageFile);
@@ -119,9 +121,7 @@ const Staff = () => {
 
     try {
       if (editingStaff) {
-        const response = await api.put(`/staff/${editingStaff._id}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.put(`/staff/${editingStaff._id}`, data);
         toast.success('Staff updated');
         
         // If the edited staff is the currently logged in user, update localStorage
@@ -135,9 +135,7 @@ const Staff = () => {
           window.location.reload();
         }
       } else {
-        await api.post('/staff', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('/staff', data);
         toast.success('Staff created');
       }
       setIsModalOpen(false);

@@ -83,9 +83,7 @@ const Users = () => {
 
     try {
       if (editingUser) {
-        await api.put(`/users/${editingUser._id}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.put(`/users/${editingUser._id}`, data);
         toast.success('User updated');
       }
       setIsModalOpen(false);

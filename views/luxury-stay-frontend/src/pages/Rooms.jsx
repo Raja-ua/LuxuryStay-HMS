@@ -127,10 +127,10 @@ const Rooms = () => {
 
     try {
       if (editingRoom) {
-        await api.put(`/rooms/${editingRoom._id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await api.put(`/rooms/${editingRoom._id}`, data);
         toast.success('Room updated successfully');
       } else {
-        await api.post('/rooms', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await api.post('/rooms', data);
         toast.success('Room added successfully');
       }
       setIsModalOpen(false);

@@ -63,9 +63,7 @@ const Register = () => {
       data.append('address', formData.address);
       data.append('role', 'guest'); // hardcoded role
 
-      await api.post('/users', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.post('/users', data);
       toast.success('Registration successful! Please login.');
       navigate('/login');
     } catch (error) {

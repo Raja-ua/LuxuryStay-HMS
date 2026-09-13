@@ -57,9 +57,7 @@ const Profile = () => {
         dataPayload.append('image', imageFile);
       }
 
-      const { data } = await api.put(`/users/${user._id}`, dataPayload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const { data } = await api.put(`/users/${user._id}`, dataPayload);
       toast.success('Profile updated successfully!');
       
       const updatedUser = data.user; // Backend returns { message, user }
